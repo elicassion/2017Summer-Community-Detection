@@ -12,8 +12,7 @@ import pickle
 from sklearn.metrics import roc_auc_score
 sys.path.append(os.path.abspath('..'))
 from BIGCLAM.predictor import predictor as BIGCLAMPredictor
-from MAGIC.predictor import predictor as MAGICPredictor
-from CODA.predictor import predictor as CODAPredictor
+from CDOT.predictor import predictor as CDOTPredictor
 
 
 def genearate_tmp_filename(s):
@@ -76,12 +75,11 @@ def get_neg_edges(edges, predictor, max_uid, num):
 
 def load_data(args):
     model2predictor = {
-        'MAGIC': MAGICPredictor,
         'BIGCLAM': BIGCLAMPredictor,
-        'CODA': CODAPredictor,
+        'CDOT': CDOTPredictor,
     }
     predictor = model2predictor[args['model']]()
-    data_dir = '{root:s}/Datasets/{dataset:s}/'.format(**args)
+    data_dir = '{root:s}/Datasets/{dataset:s}/'
     predictor.load_data(data_dir)
     ujson.dump(predictor.uname2uid, open('uname2uid.json', 'w'))
     global edges
