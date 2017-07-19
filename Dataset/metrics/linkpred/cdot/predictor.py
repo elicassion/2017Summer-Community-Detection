@@ -47,6 +47,7 @@ class predictor(object):
         self.C = 100
 
     def link_predict(self, from_user, to_user):
+        # TODO: revise formula
         result = np.dot(self.f[from_user], self.f[to_user])
         result = 1 - exp(-result)
         return result
