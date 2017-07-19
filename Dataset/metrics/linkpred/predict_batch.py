@@ -49,6 +49,7 @@ def mkdir_if_not_exists(path):
 # load edges set version
 def load_edges(data_dir, predictor):
     edges = set()
+    # count = 0
     for line in open(os.path.join(data_dir, 'link.txt')):
         # line = [i for i in line.split() if i in predictor.uname2uid]
         # print(line)
@@ -58,6 +59,9 @@ def load_edges(data_dir, predictor):
         for tpl in line[2:-1]:
             tp = tpl.split(' ')
             edges.add((doc_id, ref_id, int(tp[0]), int(tp[1])))
+        # if count < 10:
+        #     print ((doc_id, ref_id, int(tp[0]), int(tp[1])))
+        #     count += 1
     print(str(len(edges)) + " = len(edges)")
     return edges
 
@@ -117,27 +121,27 @@ def load_data(args):
 def predict(args):
     print(datetime.datetime.now(), args)
     sys.stdout.flush()
-    args['data_dir'] = '{root:s}/Datasets/{dataset:s}/'.format(**args)
+    args['data_dir'] = os.path.join(args['root'], args['dataset_path'])
     model2result_prefix = {
-        'bigclam': '{root:s}/res/{model:s}/{mode:s}/{conference:s}/',
-        'cdot': '{root:s}/res/{model:s}/{mode:s}/{conference:s}/{version:s}',
+        'bigclam': os.path.join(args['root'], 'res', args['model'], args['mode'], args['conference']),
+        'cdot': os.path.join(args['root'], 'res', args['model'], args['mode'], args['conference'], args['version']),
     }
     args['result_prefix'] = model2result_prefix[args['model']].format(**args)
     model2score_prefix = {
-        'bigclam': '{root:s}/measure/{model:s}/{mode:s}/{conference:s}/{exp:s}/',
-        'cdot': '{root:s}/measure/{model:s}/{mode:s}/{conference:s}/{exp:s}/',
+        'bigclam': os.path.join(args['root'], 'measure', args['model'], args['mode'], args['conference'], args['exp']),
+        'cdot': os.path.join(args['root'], 'measure', args['model'], args['mode'], args['conference'], args['version'], args['exp']),
     }
     args['score_prefix'] = model2score_prefix[args['model']].format(**args)
-    mkdir_if_not_exists(os.path.dirname(args['score_prefix']))
-    print (args)
-    if not (os.path.exists(args['score_prefix'] + '.pos.txt') and os.path.exists(args['score_prefix'] + '.neg.txt')):
+    mkdir_if_not_exists(args['score_prefix'])
+    print ("added args: ", args)
+    if not (os.path.exists(os.path.join(args['score_prefix'], args['n'] + '.pos.txt')) and os.path.exists(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))):
         tmp_filename = genearate_tmp_filename(ujson.dumps(args))
         ujson.dump(args, open(tmp_filename, 'w'))
-        # print (tmp_filename)
+        print ("tempfilename", tmp_filename)
         subprocess.run('python predict_one.py %s' % tmp_filename, shell=True)
         os.remove(tmp_filename)
-    pos_score = [float(line) for line in open(args['score_prefix'] + '.pos.txt')]
-    neg_score = [float(line) for line in open(args['score_prefix'] + '.neg.txt')]
+    pos_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.pos.txt'))]
+    neg_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))]
     auc = roc_auc_score([1] * len(pos_score) + [0] * len(neg_score), pos_score + neg_score)
     print(datetime.datetime.now(), 'auc: ', auc)
     sys.stdout.flush()
@@ -152,6 +156,7 @@ if __name__ == '__main__':
     model = sys.argv[2]
     mode = sys.argv[3]
     conference = sys.argv[4]
+    version = sys.argv[5]
 
     community_count = [
         100,
@@ -179,19 +184,20 @@ if __name__ == '__main__':
                         'cc': cc, 
                         'n': 'final',
                         'mode': mode,
-                        'conference': conference})
+                        'conference': conference,
+                        'version': version})
         # predict({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'lw': lw, 'n': 'final'})
         gc.collect()
-        if 'MAGIC' in model:
-            for n in range(0, 100, 10):
-                to_pred.append({'exp': exp, 
-                                'root': root, 
-                                'model': model, 
-                                'dataset_path': dataset_path, 
-                                'cc': cc, 
-                                'n': '%05d' % n,
-                                'mode': mode,
-                                'conference': conference})
-                # predict({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'lw': lw, 'n': '%04d' % n})
+        # if 'MAGIC' in model:
+        #     for n in range(0, 100, 10):
+        #         to_pred.append({'exp': exp, 
+        #                         'root': root, 
+        #                         'model': model, 
+        #                         'dataset_path': dataset_path, 
+        #                         'cc': cc, 
+        #                         'n': '%05d' % n,
+        #                         'mode': mode,
+        #                         'conference': conference})
+        #         # predict({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'lw': lw, 'n': '%04d' % n})
     result += Pool(6).map(predict, to_pred, chunksize=1)
     pickle.dump(result, open('result_batch.pkl', 'wb'))
