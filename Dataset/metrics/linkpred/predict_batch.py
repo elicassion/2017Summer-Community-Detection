@@ -174,7 +174,7 @@ if __name__ == '__main__':
                         'model': model, 
                         'dataset_path': dataset_path, 
                         'cc': cc, 
-                        'n': 'final'
+                        'n': 'final',
                         'mode': mode,
                         'conference': conference})
         # predict({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'lw': lw, 'n': 'final'})
