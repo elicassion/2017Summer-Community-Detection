@@ -13,17 +13,38 @@ class predictor(object):
 
     def load_data(self, data_dir):
         self.uname2uid = {}
-        for line in open(os.path.join(data_dir, 'network_snap.txt')):
-            line = line.split()
+        for line in open(os.path.join(data_dir, 'link.txt')):
+            line = line.split('\t')
             if line[0] not in self.uname2uid:
                 self.uname2uid[line[0]] = len(self.uname2uid)
             if line[1] not in self.uname2uid:
                 self.uname2uid[line[1]] = len(self.uname2uid)
 
     def load_result(self, result_prefix, uname2uid):
-        self.f = np.loadtxt(result_prefix + '.F.txt')  # U*C
-        self.U = self.f.shape[0]
-        self.C = self.f.shape[1]
+        resf = open(result_prefix + '.f_mu_sigma.txt', 'r')
+        res = resf.read()
+        lines = res.split('\n')
+        au_num = int(lines[0])
+        self.f = np.zeros([au_num, 100])
+        self.mu = np.zeros([au_num, 100])
+        self.sigma = np.zeros([au_num, 100])
+        for au_id, line in enumerate(lines[1:-1]):
+            items = line.split('\t')
+            au = items[0]
+            edges = items[1]
+            if edges is not '[]':
+                edges = edges.replace('[', '').replace(']', '').split(' ')
+            else:
+                continue
+            for edge in edges[-1]:
+                edge = edge.replace('(', '').replace(')', '')
+                tpl = edge.split(',')
+                comm_id = int(tpl[0])
+                self.f[au_id][comm_id] = float(tpl[1])
+                self.mu[au_id][comm_id] = float(tpl[2])
+                self.sigma[au_id][comm_id] = float(tpl[3])
+        self.U = au_num
+        self.C = 100
 
     def link_predict(self, from_user, to_user):
         result = np.dot(self.f[from_user], self.f[to_user])
