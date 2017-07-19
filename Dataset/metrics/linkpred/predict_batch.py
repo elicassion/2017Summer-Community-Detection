@@ -10,9 +10,9 @@ from multiprocessing.pool import Pool
 from multiprocessing import current_process
 import pickle
 from sklearn.metrics import roc_auc_score
-sys.path.append(os.path.abspath('..'))
-from BIGCLAM.predictor import predictor as BIGCLAMPredictor
-from CDOT.predictor import predictor as CDOTPredictor
+# sys.path.append(os.path.abspath('..'))
+from bigclam.predictor import predictor as BIGCLAMPredictor
+from cdot.predictor import predictor as CDOTPredictor
 
 
 def genearate_tmp_filename(s):
@@ -31,14 +31,14 @@ def mkdir_if_not_exists(path):
 
 
 def load_edges(data_dir, predictor):
-    edges = set()
-    for line in open(os.path.join(data_dir, 'network.txt')):
-        line = [i for i in line.split() if i in predictor.uname2uid]
+    edges = dict()
+    for line in open(os.path.join(data_dir, 'link.txt')):
+        # line = [i for i in line.split() if i in predictor.uname2uid]
         # print(line)
+        line = [i for i in line.split('\t')]
         doc_id = predictor.uname2uid[line[0]]
-        for uname in line[1:]:
-            ref_id = predictor.uname2uid[uname]
-            edges.add((ref_id, doc_id))
+        ref_id = predictor.uname2uid[line[1]]
+        edges.add((ref_id, doc_id))
     print(str(len(edges)) + " = len(edges)")
     return edges
 
@@ -79,7 +79,8 @@ def load_data(args):
         'CDOT': CDOTPredictor,
     }
     predictor = model2predictor[args['model']]()
-    data_dir = '{root:s}/Datasets/{dataset:s}/'
+    data_dir = os.path.join(args[root], args[dataset_path], args['mode'], args['conference'])
+    # load data
     predictor.load_data(data_dir)
     ujson.dump(predictor.uname2uid, open('uname2uid.json', 'w'))
     global edges
@@ -127,15 +128,23 @@ def predict(args):
 
 
 if __name__ == '__main__':
-    dataset = sys.argv[1]
+    dataset_path = sys.argv[1]
     model = sys.argv[2]
+    mode = sys.argv[3]
+    conference = sys.argv[4]
+
     community_count = [
         100,
     ]
 
     exp = 'link_pred'
-    root = os.path.abspath('../..')
-    pos_edges, neg_edges = load_data({'exp': exp, 'root': root, 'model': model, 'dataset': dataset})
+    root = os.path.abspath(os.path.join('..', '..'))
+    pos_edges, neg_edges = load_data({'exp': exp, 
+                                    'root': root, 
+                                    'model': model, 
+                                    'dataset_path': dataset_path, 
+                                    'mode': mode,
+                                    'conference': conference})
     ujson.dump(pos_edges, open('pos_edges.json', 'w'))
     del pos_edges
     ujson.dump(neg_edges, open('neg_edges.json', 'w'))
@@ -143,12 +152,26 @@ if __name__ == '__main__':
     result = []
     to_pred = []
     for cc in community_count:
-        to_pred.append({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'n': 'final'})
+        to_pred.append({'exp': exp, 
+                        'root': root, 
+                        'model': model, 
+                        'dataset_path': dataset_path, 
+                        'cc': cc, 
+                        'n': 'final'
+                        'mode': mode,
+                        'conference': conference})
         # predict({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'lw': lw, 'n': 'final'})
         gc.collect()
         if 'MAGIC' in model:
             for n in range(0, 100, 10):
-                to_pred.append({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'n': '%05d' % n})
+                to_pred.append({'exp': exp, 
+                                'root': root, 
+                                'model': model, 
+                                'dataset_path': dataset_path, 
+                                'cc': cc, 
+                                'n': '%05d' % n,
+                                'mode': mode,
+                                'conference': conference})
                 # predict({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'lw': lw, 'n': '%04d' % n})
     result += Pool(6).map(predict, to_pred, chunksize=1)
     pickle.dump(result, open('result_batch.pkl', 'wb'))
