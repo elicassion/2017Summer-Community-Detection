@@ -29,16 +29,35 @@ def mkdir_if_not_exists(path):
                 if os.path.exists(path):
                     break
 
+# load edges dict version
+# def load_edges(data_dir, predictor):
+#     edges = dict()
+#     for line in open(os.path.join(data_dir, 'link.txt')):
+#         # line = [i for i in line.split() if i in predictor.uname2uid]
+#         # print(line)
+#         line = [i for i in line.split('\t')]
+#         doc_id = predictor.uname2uid[line[0]]
+#         ref_id = predictor.uname2uid[line[1]]
+#         if (ref_id, doc_id) not in edges.keys():
+#             edges[(ref_id, doc_id)] = set()
+#         for tpl in line[2:-1]:
+#             tp = tpl.split(' ')
+#             edges[(ref_id, doc_id)].add((tp[0], tp[1]))
+#     # print(str(len(edges)) + " = len(edges)")
+#     return edges
 
+# load edges set version
 def load_edges(data_dir, predictor):
-    edges = dict()
+    edges = set()
     for line in open(os.path.join(data_dir, 'link.txt')):
         # line = [i for i in line.split() if i in predictor.uname2uid]
         # print(line)
         line = [i for i in line.split('\t')]
         doc_id = predictor.uname2uid[line[0]]
         ref_id = predictor.uname2uid[line[1]]
-        edges.add((ref_id, doc_id))
+        for tpl in line[2:-1]:
+            tp = tpl.split(' ')
+            edges.add((doc_id, ref_id, tp[0], tp[1]))
     print(str(len(edges)) + " = len(edges)")
     return edges
 
