@@ -19,12 +19,13 @@ class predictor(object):
                 self.uname2uid[line[0]] = len(self.uname2uid)
             if line[1] not in self.uname2uid:
                 self.uname2uid[line[1]] = len(self.uname2uid)
+        print ("load data done.")
 
-    def load_result(self, result_prefix, uname2uid):
-        resf = open(result_prefix + '.f_mu_sigma.txt', 'r')
+    def load_result(self, result_prefix, n, uname2uid):
+        resf = open(os.path.join(result_prefix, n + '.f_mu_sigma.txt'), 'r')
         res = resf.read()
         lines = res.split('\n')
-        au_num = int(lines[0])
+        au_num = len(uname2uid)
         self.f = np.zeros([au_num, 100])
         self.mu = np.zeros([au_num, 100])
         self.sigma = np.zeros([au_num, 100])
@@ -45,9 +46,12 @@ class predictor(object):
                 self.sigma[au_id][comm_id] = float(tpl[3])
         self.U = au_num
         self.C = 100
+        print ("load result done.")
+        # print (np.dot(self.f[0], self.f[1]))
 
-    def link_predict(self, from_user, to_user):
+    def link_predict(self, from_user, to_user, from_time, to_time):
         # TODO: revise formula
+        # print ()
         result = np.dot(self.f[from_user], self.f[to_user])
         result = 1 - exp(-result)
         return result
