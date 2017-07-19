@@ -10,9 +10,8 @@ from multiprocessing import current_process
 import pickle
 from sklearn.metrics import roc_auc_score
 sys.path.append(os.path.abspath('..'))
-from BIGCLAM.predictor import predictor as BIGCLAMPredictor
-from MAGIC.predictor import predictor as MAGICPredictor
-from CODA.predictor import predictor as CODAPredictor
+from bigclam.predictor import predictor as BIGCLAMPredictor
+from cdot.predictor import predictor as CDOTPredictor
 
 
 def prdict_edges(predictor, edges, tag):
@@ -30,9 +29,8 @@ def prdict_edges(predictor, edges, tag):
 
 if __name__ == '__main__':
     model2predictor = {
-        'BIGCLAM': BIGCLAMPredictor,
-        'MAGIC': MAGICPredictor,
-        'CODA': CODAPredictor,
+        'bigclam': BIGCLAMPredictor,
+        'cdot': CODAPredictor,
     }
     args = ujson.load(open(sys.argv[1]))
     pos_edges = ujson.load(open('pos_edges.json'))
