@@ -134,12 +134,12 @@ def predict(args):
     args['score_prefix'] = model2score_prefix[args['model']].format(**args)
     mkdir_if_not_exists(args['score_prefix'])
     print ("added args: ", args)
-    if not (os.path.exists(os.path.join(args['score_prefix'], args['n'] + '.pos.txt')) and os.path.exists(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))):
-        tmp_filename = genearate_tmp_filename(ujson.dumps(args))
-        ujson.dump(args, open(tmp_filename, 'w'))
-        print ("tempfilename", tmp_filename)
-        subprocess.run('python predict_one.py %s' % tmp_filename, shell=True)
-        os.remove(tmp_filename)
+    # if not (os.path.exists(os.path.join(args['score_prefix'], args['n'] + '.pos.txt')) and os.path.exists(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))):
+    tmp_filename = genearate_tmp_filename(ujson.dumps(args))
+    ujson.dump(args, open(tmp_filename, 'w'))
+    print ("tempfilename", tmp_filename)
+    subprocess.run('python predict_one.py %s' % tmp_filename, shell=True)
+    os.remove(tmp_filename)
     pos_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.pos.txt'))]
     neg_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))]
     auc = roc_auc_score([1] * len(pos_score) + [0] * len(neg_score), pos_score + neg_score)

@@ -22,8 +22,10 @@ class predictor(object):
         print ("load data done.")
 
     def load_result(self, result_prefix, n, uname2uid):
+        # print (os.path.join(result_prefix, n + '.f_mu_sigma.txt'))
         resf = open(os.path.join(result_prefix, n + '.f_mu_sigma.txt'), 'r')
         res = resf.read()
+        # print (res)
         lines = res.split('\n')
         au_num = len(uname2uid)
         self.f = np.zeros([au_num, 100])
@@ -37,13 +39,14 @@ class predictor(object):
                 edges = edges.replace('[', '').replace(']', '').split(' ')
             else:
                 continue
-            for edge in edges[-1]:
+            for edge in edges[:-1]:
                 edge = edge.replace('(', '').replace(')', '')
                 tpl = edge.split(',')
                 comm_id = int(tpl[0])
                 self.f[au_id][comm_id] = float(tpl[1])
                 self.mu[au_id][comm_id] = float(tpl[2])
                 self.sigma[au_id][comm_id] = float(tpl[3])
+                # print (tpl)
         self.U = au_num
         self.C = 100
         print ("load result done.")
@@ -53,5 +56,6 @@ class predictor(object):
         # TODO: revise formula
         # print ()
         result = np.dot(self.f[from_user], self.f[to_user])
+        # print (result)
         result = 1 - exp(-result)
         return result
