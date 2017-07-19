@@ -19,7 +19,7 @@ if __name__ == '__main__':
       'cite', 
       # 'coau'
     ]
-    conference = [
+    conferences = [
       'AAAI', 
       # 'ACL', 
       # 'SIGCOMM'
@@ -27,8 +27,8 @@ if __name__ == '__main__':
     versions = {
         'cdot': [
             'CDOT2',
-            'CDOT3',
-            'CDOT8'
+            # 'CDOT3',
+            # 'CDOT8'
         ]
     }
     dataset_path = 'data'
@@ -38,13 +38,14 @@ if __name__ == '__main__':
     data = {'model': [], 'cc': [], 'n': [], 'score': [], 'mode': [], 'conference': [], 'version':[]}
     for model in models:
         for mode in modes:
-            if versions[model]:
-                for version in versions[model]:
-                    subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s}'.format(dataset_path, model, mode, conference, version), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
-            else:
-                subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s}'.format(dataset_path, model, mode, conference, ''), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
-            result += pickle.load(open('result_batch.pkl', 'rb'))
-            pickle.dump(result, open('result.pkl', 'wb'))   
+            for conference in conferences:
+                if versions[model]:
+                    for version in versions[model]:
+                        subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s}'.format(dataset_path, model, mode, conference, version), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+                else:
+                    subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s}'.format(dataset_path, model, mode, conference, ''), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+                result += pickle.load(open('result_batch.pkl', 'rb'))
+                pickle.dump(result, open('result.pkl', 'wb'))   
     for i in result:
         for k in data.keys():
             data[k].append(i[k])
