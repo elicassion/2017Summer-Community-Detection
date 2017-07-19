@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from math import exp
-
+from scipy.stats import norm
 
 class predictor(object):
 
@@ -21,7 +21,7 @@ class predictor(object):
                 self.uname2uid[line[1]] = len(self.uname2uid)
         print ("load data done.")
 
-    def load_result(self, result_prefix, uname2uid):
+    def load_result(self, result_prefix, n, uname2uid, cc):
         resf = open(os.path.join(result_prefix, n + '.f.txt'), 'r')
         res = resf.read()
         # print (res)
@@ -41,10 +41,9 @@ class predictor(object):
         self.U = au_num
         self.C = cc
         print ("load result done.")
-        # print (np.dot(self.f[0], self.f[1]))
-        print (np.dot(norm.pdf(1994, self.mu[0], self.sigma[0]), norm.pdf(1998, self.mu[1], self.sigma[1])))
+        print (np.dot(self.f[0], self.f[1]))
 
-    def link_predict(self, from_user, to_user):
+    def link_predict(self, from_user, to_user, ft, tt):
         result = np.dot(self.f[from_user], self.f[to_user])
         result = 1 - exp(-result)
         return result

@@ -123,12 +123,12 @@ def predict(args):
     sys.stdout.flush()
     args['data_dir'] = os.path.join(args['root'], args['dataset_path'])
     model2result_prefix = {
-        'bigclam': os.path.join(args['root'], 'res', args['model'], args['mode'], args['conference']),
+        'bigclam': os.path.join(args['root'], 'res', args['model'], args['mode'], args['conference'], args['version']),
         'cdot': os.path.join(args['root'], 'res', args['model'], args['mode'], args['conference'], args['version']),
     }
     args['result_prefix'] = model2result_prefix[args['model']].format(**args)
     model2score_prefix = {
-        'bigclam': os.path.join(args['root'], 'measure', args['model'], args['mode'], args['conference'], args['exp']),
+        'bigclam': os.path.join(args['root'], 'measure', args['model'], args['mode'], args['conference'], args['version'], args['exp']),
         'cdot': os.path.join(args['root'], 'measure', args['model'], args['mode'], args['conference'], args['version'], args['exp']),
     }
     args['score_prefix'] = model2score_prefix[args['model']].format(**args)

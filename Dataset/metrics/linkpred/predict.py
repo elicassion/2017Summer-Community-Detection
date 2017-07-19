@@ -30,7 +30,7 @@ if __name__ == '__main__':
             # ('CDOT3', 100),
             # ('CDOT8', 100),
             ('CDOT_L0', 19)
-        ]
+        ],
         'bigclam': [
             ('bigclam_100', 100),
         ]
