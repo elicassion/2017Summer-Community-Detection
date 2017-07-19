@@ -57,7 +57,7 @@ def load_edges(data_dir, predictor):
         ref_id = predictor.uname2uid[line[1]]
         for tpl in line[2:-1]:
             tp = tpl.split(' ')
-            edges.add((doc_id, ref_id, tp[0], tp[1]))
+            edges.add((doc_id, ref_id, int(tp[0]), int(tp[1])))
     print(str(len(edges)) + " = len(edges)")
     return edges
 
@@ -81,24 +81,26 @@ def get_neg_edges(edges, predictor, max_uid, num):
         while True:
             from_user = random.randint(0, max_uid)
             to_user = random.randint(0, max_uid)
-            if isinstance(predictor, MAGICPredictor):
-                if predictor.label[from_user][1] == predictor.label[to_user][1]:
-                    continue
-                elif predictor.label[from_user][1] > predictor.label[to_user][1]:
-                    from_user, to_user = to_user, from_user
-            if (from_user, to_user) not in edges and (to_user, from_user) not in edges:
+            from_time = random.randint(1990, 2016)
+            to_time = random.randint(1990, 2016)
+            # if isinstance(predictor, MAGICPredictor):
+            #     if predictor.label[from_user][1] == predictor.label[to_user][1]:
+            #         continue
+            #     elif predictor.label[from_user][1] > predictor.label[to_user][1]:
+            #         from_user, to_user = to_user, from_user
+            if (from_user, to_user, from_time, to_time) not in edges and (to_user, from_user, to_time, from_time) not in edges:
                 break
-        neg_edges.append((from_user, to_user))
+        neg_edges.append((from_user, to_user, from_time, to_time))
     return neg_edges
 
 
 def load_data(args):
     model2predictor = {
-        'BIGCLAM': BIGCLAMPredictor,
-        'CDOT': CDOTPredictor,
+        'bigclam': BIGCLAMPredictor,
+        'cdot': CDOTPredictor,
     }
     predictor = model2predictor[args['model']]()
-    data_dir = os.path.join(args[root], args[dataset_path], args['mode'], args['conference'])
+    data_dir = os.path.join(args['root'], args['dataset_path'], args['mode'], args['conference'])
     # load data
     predictor.load_data(data_dir)
     ujson.dump(predictor.uname2uid, open('uname2uid.json', 'w'))
@@ -145,6 +147,7 @@ def predict(args):
 
 
 if __name__ == '__main__':
+    print (sys.argv)
     dataset_path = sys.argv[1]
     model = sys.argv[2]
     mode = sys.argv[3]
