@@ -117,15 +117,13 @@ def predict(args):
     sys.stdout.flush()
     args['data_dir'] = '{root:s}/Datasets/{dataset:s}/'.format(**args)
     model2result_prefix = {
-        'MAGIC': '{root:s}/Results/{dataset:s}/{model:s}/cc{cc:d}_{n:s}',
-        'BIGCLAM': '{root:s}/Results/{dataset:s}/{model:s}/cc{cc:d}_',
-        'CODA': '{root:s}/Results/{dataset:s}/{model:s}/cc{cc:d}_',
+        'bigclam': '{root:s}/res/{model:s}/{mode:s}/{conference:s}/',
+        'cdot': '{root:s}/res/{model:s}/{mode:s}/{conference:s}/{version:s}',
     }
     args['result_prefix'] = model2result_prefix[args['model']].format(**args)
     model2score_prefix = {
-        'MAGIC': '{root:s}/Scores/{exp:s}/{dataset:s}/{model:s}/cc{cc:d}_{n:s}',
-        'BIGCLAM': '{root:s}/Scores/{exp:s}/{dataset:s}/{model:s}/cc{cc:d}_',
-        'CODA': '{root:s}/Scores/{exp:s}/{dataset:s}/{model:s}/cc{cc:d}_',
+        'bigclam': '{root:s}/measure/{model:s}/{mode:s}/{conference:s}/{exp:s}/',
+        'cdot': '{root:s}/measure/{model:s}/{mode:s}/{conference:s}/{exp:s}/',
     }
     args['score_prefix'] = model2score_prefix[args['model']].format(**args)
     mkdir_if_not_exists(os.path.dirname(args['score_prefix']))
