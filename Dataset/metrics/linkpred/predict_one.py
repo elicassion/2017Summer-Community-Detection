@@ -43,7 +43,7 @@ if __name__ == '__main__':
     sys.stdout.flush()
 
     predictor = model2predictor[args['model']]()
-    predictor.load_result(args['result_prefix'], args['n'], uname2uid)
+    predictor.load_result(args['result_prefix'], args['n'], uname2uid, args['cc'])
     print(datetime.datetime.now(), 'predictor init done')
     sys.stdout.flush()
 

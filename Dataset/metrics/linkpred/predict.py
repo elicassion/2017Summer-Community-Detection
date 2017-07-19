@@ -12,8 +12,8 @@ import pandas as pd
 if __name__ == '__main__':
     models = [
         # 'MAGIC',
-        # 'BIGCLAM',
-        'cdot',
+        'bigclam',
+        # 'cdot',
     ]
     modes = [
       'cite', 
@@ -26,9 +26,13 @@ if __name__ == '__main__':
     ]
     versions = {
         'cdot': [
-            'CDOT2',
-            'CDOT3',
-            'CDOT8'
+            # ('CDOT2', 100),
+            # ('CDOT3', 100),
+            # ('CDOT8', 100),
+            ('CDOT_L0', 19)
+        ]
+        'bigclam': [
+            ('bigclam_100', 100),
         ]
     }
     dataset_path = 'data'
@@ -41,10 +45,10 @@ if __name__ == '__main__':
             for conference in conferences:
                 if versions[model]:
                     for version in versions[model]:
-                        subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s}'.format(dataset_path, model, mode, conference, version), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+                        subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s} {5:d}'.format(dataset_path, model, mode, conference, version[0], version[1]), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
                         result += pickle.load(open('result_batch.pkl', 'rb'))
                 else:
-                    subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s}'.format(dataset_path, model, mode, conference, ''), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+                    subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s} {5:d}'.format(dataset_path, model, mode, conference, '', 100), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
                     result += pickle.load(open('result_batch.pkl', 'rb'))
                 pickle.dump(result, open('result.pkl', 'wb'))   
     for i in result:
@@ -56,3 +60,5 @@ if __name__ == '__main__':
     if not os.path.exists(os.path.dirname(out_filename)):
         os.makedirs(os.path.dirname(out_filename))
     df.to_csv(out_filename, index=False)
+    os.remove('result_batch.pkl')
+    os.remove('result.pkl')
