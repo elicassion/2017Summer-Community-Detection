@@ -24,8 +24,8 @@ def prdict_edges(predictor, edges, tag):
             print(datetime.datetime.now(), tag, count, scores[-1])
             sys.stdout.flush()
         count += 1
-        if count < 10:
-            print (edge)
+        # if count < 10:
+        #     print (edge)
     return scores
 
 

@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from math import exp
-
+from scipy.stats import norm
 
 class predictor(object):
 
@@ -30,7 +30,7 @@ class predictor(object):
         au_num = len(uname2uid)
         self.f = np.zeros([au_num, 100])
         self.mu = np.zeros([au_num, 100])
-        self.sigma = np.zeros([au_num, 100])
+        self.sigma = np.ones([au_num, 100])
         for au_id, line in enumerate(lines[1:-1]):
             items = line.split('\t')
             au = items[0]
@@ -51,11 +51,15 @@ class predictor(object):
         self.C = 100
         print ("load result done.")
         # print (np.dot(self.f[0], self.f[1]))
+        print (np.dot(norm.pdf(1994, self.mu[0], self.sigma[0]), norm.pdf(1998, self.mu[1], self.sigma[1])))
 
     def link_predict(self, from_user, to_user, from_time, to_time):
         # TODO: revise formula
         # print ()
-        result = np.dot(self.f[from_user], self.f[to_user])
+        # result = np.dot(self.f[from_user], norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])) * \
+        #             np.dot(self.f[to_user], norm.pdf(to_time, self.mu[to_user], self.sigma[to_user]))
+        result = np.dot(self.f[from_user], self.f[to_user]) * \
+                    np.dot(norm.pdf(from_time, self.mu[from_user], self.sigma[from_user]), norm.pdf(to_time, self.mu[to_user], self.sigma[to_user]))
         # print (result)
         result = 1 - exp(-result)
         return result
