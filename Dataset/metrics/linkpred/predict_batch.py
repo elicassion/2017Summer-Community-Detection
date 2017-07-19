@@ -157,10 +157,11 @@ if __name__ == '__main__':
     mode = sys.argv[3]
     conference = sys.argv[4]
     version = sys.argv[5]
+    community_count = sys.argv[6]
 
-    community_count = [
-        100,
-    ]
+    # community_count = [
+    #     19,
+    # ]
 
     exp = 'link_pred'
     root = os.path.abspath(os.path.join('..', '..'))
@@ -176,28 +177,17 @@ if __name__ == '__main__':
     del neg_edges
     result = []
     to_pred = []
-    for cc in community_count:
-        to_pred.append({'exp': exp, 
-                        'root': root, 
-                        'model': model, 
-                        'dataset_path': dataset_path, 
-                        'cc': cc, 
-                        'n': 'final',
-                        'mode': mode,
-                        'conference': conference,
-                        'version': version})
-        # predict({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'lw': lw, 'n': 'final'})
-        gc.collect()
-        # if 'MAGIC' in model:
-        #     for n in range(0, 100, 10):
-        #         to_pred.append({'exp': exp, 
-        #                         'root': root, 
-        #                         'model': model, 
-        #                         'dataset_path': dataset_path, 
-        #                         'cc': cc, 
-        #                         'n': '%05d' % n,
-        #                         'mode': mode,
-        #                         'conference': conference})
-        #         # predict({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'lw': lw, 'n': '%04d' % n})
+    # for cc in community_count:
+    to_pred.append({'exp': exp, 
+                    'root': root, 
+                    'model': model, 
+                    'dataset_path': dataset_path, 
+                    'cc': community_count, 
+                    'n': 'final',
+                    'mode': mode,
+                    'conference': conference,
+                    'version': version})
+    # predict({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'lw': lw, 'n': 'final'})
+    gc.collect()
     result += Pool(6).map(predict, to_pred, chunksize=1)
     pickle.dump(result, open('result_batch.pkl', 'wb'))

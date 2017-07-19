@@ -21,16 +21,18 @@ class predictor(object):
                 self.uname2uid[line[1]] = len(self.uname2uid)
         print ("load data done.")
 
-    def load_result(self, result_prefix, n, uname2uid):
+    def load_result(self, result_prefix, n, uname2uid, cc):
         # print (os.path.join(result_prefix, n + '.f_mu_sigma.txt'))
         resf = open(os.path.join(result_prefix, n + '.f_mu_sigma.txt'), 'r')
         res = resf.read()
         # print (res)
         lines = res.split('\n')
         au_num = len(uname2uid)
-        self.f = np.zeros([au_num, 100])
-        self.mu = np.zeros([au_num, 100])
-        self.sigma = np.ones([au_num, 100])
+        # L0=19
+        self.f = np.zeros([au_num, cc])
+        # self.mu = np.zeros([au_num, cc])
+        self.mu = np.linspace(2008, 2008, au_num*cc).reshape((au_num, cc))
+        self.sigma = np.ones([au_num, cc])
         for au_id, line in enumerate(lines[1:-1]):
             items = line.split('\t')
             au = items[0]
@@ -48,7 +50,7 @@ class predictor(object):
                 self.sigma[au_id][comm_id] = float(tpl[3])
                 # print (tpl)
         self.U = au_num
-        self.C = 100
+        self.C = cc
         print ("load result done.")
         # print (np.dot(self.f[0], self.f[1]))
         print (np.dot(norm.pdf(1994, self.mu[0], self.sigma[0]), norm.pdf(1998, self.mu[1], self.sigma[1])))
