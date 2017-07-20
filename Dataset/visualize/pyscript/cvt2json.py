@@ -18,20 +18,25 @@ edges_filename = os.path.join(gen_data_path, "%s.t%02d.edges" % (prefix, t_step)
 nodes = []
 edges = []
 cf = open(comm_filename, "r")
+maxn = 0
 for cid, line in enumerate(cf.read().split('\n')[:-1]):
 	members = line.split(' ')[:-1]
 	for mem in members:
-		node = {}
-		node['attributes'] = {'modualrity_class': cid}
-		node['catagory'] = cid
-		node['id'] = mem
-		node['itemStyle'] = {'label':{'normal':{'show':False}}}
-		node['name'] = mem
-		node['symbolSize'] = 20
-		node['value'] = 20
-		nodes.append(node)
+		mem = int(mem)
+		if mem > maxn:
+			maxn = mem
+for i in range(1, maxn+1):
+	node = {}
+	node['attributes'] = {'modualrity_class': cid}
+	node['catagory'] = cid
+	node['id'] = str(i)
+	node['itemStyle'] = {'label':{'normal':{'show':False}}}
+	node['name'] = str(i)
+	node['symbolSize'] = 20
+	node['value'] = 20
+	nodes.append(node)
 cf.close()
-ef = open(comm_filename, "r")
+ef = open(edges_filename, "r")
 for link in ef.read().split('\n')[:-1]:
 	tpl = link.split(' ')
 	edge = {}
@@ -39,7 +44,7 @@ for link in ef.read().split('\n')[:-1]:
 	edge['lineStyle'] = {'normal':{}}
 	edge['name'] = ""
 	edge['source'] = tpl[0]
-	edge['source'] = tpl[1]
+	edge['target'] = tpl[1]
 	edges.append(edge)
 ef.close()
 graph = {'nodes': nodes, 'links': edges}
