@@ -1,0 +1,7 @@
+*.pdf
+*.rar
+Dataset/res/*
+*.json
+*.csv
+*.tgz
+*.zip
