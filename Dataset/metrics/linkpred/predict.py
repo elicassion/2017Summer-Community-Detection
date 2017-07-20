@@ -12,8 +12,8 @@ import pandas as pd
 if __name__ == '__main__':
     models = [
         # 'MAGIC',
-        'bigclam',
-        # 'cdot',
+        # 'bigclam',
+        'cdot',
     ]
     modes = [
       'cite', 
@@ -29,7 +29,8 @@ if __name__ == '__main__':
             # ('CDOT2', 100),
             # ('CDOT3', 100),
             # ('CDOT8', 100),
-            ('CDOT_L0', 19)
+            # ('CDOT_L0', 19),
+            ('CDOT_L0_071923', 19),
         ],
         'bigclam': [
             ('bigclam_100', 100),
