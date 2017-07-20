@@ -38,7 +38,8 @@ let t_step = "t05";
 let dataUrl = "data/"+prefix+'.'+t_step+'.json';
 $.getJSON(dataUrl, function(gJson){
     let graph = gJson;
-    console.log(graph);
+    console.log(graph.nodes);
+    console.log(graph.links);
     let myChart = echarts.init(document.getElementById('main'));
     let categories = [];
     for (let i = 0; i < 32; i++) {
@@ -66,7 +67,7 @@ $.getJSON(dataUrl, function(gJson){
             {
                 name: 'Les Miserables',
                 type: 'graph',
-                layout: 'none',
+                layout: 'force',
                 data: graph.nodes,
                 links: graph.links,
                 categories: categories,

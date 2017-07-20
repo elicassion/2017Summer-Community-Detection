@@ -15,6 +15,7 @@ prefix = "birthdeath"
 t_step = 5
 comm_filename = os.path.join(gen_data_path, "%s.t%02d.comm" % (prefix, t_step))
 edges_filename = os.path.join(gen_data_path, "%s.t%02d.edges" % (prefix, t_step))
+node_set = set()
 nodes = []
 edges = []
 cf = open(comm_filename, "r")
@@ -22,19 +23,20 @@ maxn = 0
 for cid, line in enumerate(cf.read().split('\n')[:-1]):
 	members = line.split(' ')[:-1]
 	for mem in members:
-		mem = int(mem)
-		if mem > maxn:
-			maxn = mem
-for i in range(1, maxn+1):
-	node = {}
-	node['attributes'] = {'modualrity_class': cid}
-	node['catagory'] = cid
-	node['id'] = str(i)
-	node['itemStyle'] = {'label':{'normal':{'show':False}}}
-	node['name'] = str(i)
-	node['symbolSize'] = 20
-	node['value'] = 20
-	nodes.append(node)
+		if int(mem) not in node_set:
+			node_set.add(int(mem))
+			node = {}
+			node['attributes'] = {'modularity_class': cid}
+			node['category'] = cid
+			node['id'] = mem
+			node['itemStyle'] = {'label':{'normal':{'show':False}}}
+			node['name'] = mem
+			node['symbolSize'] = 5
+			node['value'] = 20
+			node['x'] = None
+			node['y'] = None
+			nodes.append(node)
+	
 cf.close()
 ef = open(edges_filename, "r")
 for link in ef.read().split('\n')[:-1]:
