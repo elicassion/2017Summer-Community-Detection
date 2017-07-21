@@ -1303,7 +1303,7 @@ int BaseGenerator::print_network( int step, bool weighted, deque<set<int> > & E,
 
 	// Write network
 	char buffer[1024];
-	sprintf(buffer, "..\\gen_data\\%s.t%02d.edges",OUTPUT_PREFIX,step);
+	sprintf(buffer, "../gen_data/%s.t%02d.edges",OUTPUT_PREFIX,step);
 	if( weighted )
 	{
 		cout << "Writing undirected weighted graph..." << endl;
@@ -1318,7 +1318,7 @@ int BaseGenerator::print_network( int step, bool weighted, deque<set<int> > & E,
 	// Write communities
 	cout << "Writing " << member_matrix.size() << " communities..." << endl;
 #ifdef WRITE_COMMUNITY_PERLINE
-	sprintf(buffer,"..\\gen_data\\%s.t%02d.comm",OUTPUT_PREFIX,step);
+	sprintf(buffer,"../gen_data/%s.t%02d.comm",OUTPUT_PREFIX,step);
 	write_communities_bycommunity( buffer, member_matrix );
 #else
 	sprintf(buffer,"%s_community.t%02d.dat",OUTPUT_PREFIX, step);
@@ -1326,7 +1326,7 @@ int BaseGenerator::print_network( int step, bool weighted, deque<set<int> > & E,
 #endif
 
 	// Write stats
-	sprintf(buffer,"..\\gen_data\\%s.t%02d.stats",OUTPUT_PREFIX,step);
+	sprintf(buffer,"../gen_data/%s.t%02d.stats",OUTPUT_PREFIX,step);
 	ofstream statout(buffer);
 	deque<int> degree_seq;
 
@@ -1407,13 +1407,13 @@ int BaseGenerator::print_history( int steps )
 	char buffer[1024];
 	
 	// Write history file
-	sprintf(buffer, "..\\gen_data\\%s.timeline",OUTPUT_PREFIX);
+	sprintf(buffer, "../gen_data/%s.timeline",OUTPUT_PREFIX);
 	cout << "Writing timeline for " << timeline.size() << " communities to " << buffer << " ..." << endl;
 	timeline.write( buffer, steps );
 	
     if( this->do_write_events )
     {
-            sprintf(buffer, "..\\gen_data\\%s.events",OUTPUT_PREFIX);
+            sprintf(buffer, "../gen_data/%s.events",OUTPUT_PREFIX);
             cout << "Writing " << events.size() << " events to " << buffer << " ..." << endl;
             write_events( buffer, events );
     }
