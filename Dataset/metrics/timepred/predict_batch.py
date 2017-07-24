@@ -13,6 +13,7 @@ from sklearn.metrics import roc_auc_score
 # sys.path.append(os.path.abspath('..'))
 from bigclam.predictor import predictor as BIGCLAMPredictor
 from cdot.predictor import predictor as CDOTPredictor
+import numpy as np
 
 
 def genearate_tmp_filename(s):
@@ -130,7 +131,7 @@ def predict(args):
     pos_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.pos.conf_%s.txt' % args['toleration']))]
     # neg_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))]
     # TODO: modify
-    accp = pos_score
+    accp = np.sum(pos_score)
     print(datetime.datetime.now(), 'accp: ', accp)
     sys.stdout.flush()
 
