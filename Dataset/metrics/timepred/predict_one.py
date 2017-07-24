@@ -14,12 +14,12 @@ from bigclam.predictor import predictor as BIGCLAMPredictor
 from cdot.predictor import predictor as CDOTPredictor
 
 
-def prdict_edges(predictor, edges, tag, toleration):
+def prdict_edges(predictor, edges, tag, toleration, predict_mode):
     scores = []
     count = 0
     # for edge in random.sample(edges, num):
     for edge in edges:
-        scores.append(predictor.time_predict(*edge, toleration))
+        scores.append(predictor.time_predict(*edge, toleration, predict_mode))
         if count % 100000 == 0:
             print(datetime.datetime.now(), tag, count, scores[-1])
             sys.stdout.flush()
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     print(datetime.datetime.now(), 'predictor init done')
     sys.stdout.flush()
 
-    pos_score = prdict_edges(predictor, pos_edges, 'pos: ', float(args['toleration']))
+    pos_score = prdict_edges(predictor, pos_edges, 'pos: ', float(args['toleration']), args['predict_mode'])
     print(datetime.datetime.now(), 'predict pos done')
     sys.stdout.flush()
 

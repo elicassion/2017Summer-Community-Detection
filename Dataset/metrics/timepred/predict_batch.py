@@ -131,7 +131,7 @@ def predict(args):
     pos_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.pos.conf_%s.txt' % args['toleration']))]
     # neg_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))]
     # TODO: modify
-    accp = np.sum(pos_score)
+    accp = np.sum(pos_score) / int(len(edges) * 0.1)
     print(datetime.datetime.now(), 'accp: ', accp)
     sys.stdout.flush()
 
@@ -148,6 +148,7 @@ if __name__ == '__main__':
     version = sys.argv[5]
     community_count = sys.argv[6]
     toleration = sys.argv[7]
+    predict_mode = sys.argv[8]
 
     # community_count = [
     #     19,
@@ -177,7 +178,8 @@ if __name__ == '__main__':
                     'mode': mode,
                     'conference': conference,
                     'version': version,
-                    'toleration': toleration})
+                    'toleration': toleration,
+                    'predict_mode': predict_mode})
     # predict({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'lw': lw, 'n': 'final'})
     gc.collect()
     result += Pool(6).map(predict, to_pred, chunksize=1)

@@ -12,7 +12,7 @@ import pandas as pd
 if __name__ == '__main__':
     models = [
         # 'MAGIC',
-        # 'bigclam',
+        'bigclam',
         'cdot',
     ]
     modes = [
@@ -32,10 +32,12 @@ if __name__ == '__main__':
             # ('CDOT_L0', 19),
             # ('CDOT_L0_071923', 19),
             # ('CDOT_L0_ori', 19),
-            ('CDOT_L0_072317', 19),
+            # ('CDOT_L0_072317', 19),
+            ('CDOT_L1_072416', 287)
         ],
         'bigclam': [
-            ('bigclam_100', 100),
+            # ('bigclam_100', 100),
+            ('bigclam_L1_072416', 287)
         ]
     }
     dataset_path = 'data'
