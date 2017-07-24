@@ -31,7 +31,8 @@ if __name__ == '__main__':
             # ('CDOT8', 100),
             # ('CDOT_L0', 19),
             # ('CDOT_L0_071923', 19),
-            ('CDOT_L0_ori', 19),
+            # ('CDOT_L0_ori', 19),
+            ('CDOT_L0_072317', 19),
         ],
         'bigclam': [
             ('bigclam_100', 100),
