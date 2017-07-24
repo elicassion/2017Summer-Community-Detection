@@ -13,12 +13,23 @@ class predictor(object):
 
     def load_data(self, data_dir):
         self.uname2uid = {}
+        self.uvt1_rec = {}
         for line in open(os.path.join(data_dir, 'link.txt')):
             line = line.split('\t')
             if line[0] not in self.uname2uid:
                 self.uname2uid[line[0]] = len(self.uname2uid)
             if line[1] not in self.uname2uid:
                 self.uname2uid[line[1]] = len(self.uname2uid)
+            doc_id = self.uname2uid[line[0]]
+            ref_id = self.uname2uid[line[1]]
+            for tpl in line[2:-1]:
+                tp = tpl.split(' ')
+                t1 = int(tp[0])
+                t2 = int(tp[1])
+                uvt1 = (doc_id, ref_id, t1)
+                if uvt1 not in self.uvt1_rec.keys():
+                    self.uvt1_rec[uvt1] = set()
+                self.uvt1_rec[uvt1].add(t2)
         print ("load data done.")
 
     def load_result(self, result_prefix, n, uname2uid, cc):
