@@ -2,7 +2,7 @@ import numpy as np
 import os
 from math import exp
 from scipy.stats import norm
-from sklearn.preprocessing import MinMaxScaler as mmnorm
+from sklearn.preprocessing import MinMaxScaler
 
 class predictor(object):
 
@@ -90,6 +90,7 @@ class predictor(object):
             st_p_keys = [item[0] for item in st_p]
             st_p_values = [item[1] for item in st_p]
             # min max norm
+            mmnorm = MinMaxScaler()
             st_p_values = mmnorm.fit_transform(np.array(st_p_values).reshape([1, -1])).reshape([-1]).tolist()
             accumulate_p = 0
             for t2 in true_t2:
