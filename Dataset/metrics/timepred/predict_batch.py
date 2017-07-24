@@ -107,6 +107,7 @@ def load_data(args):
 
 
 def predict(args):
+    global edges
     print(datetime.datetime.now(), args)
     sys.stdout.flush()
     args['data_dir'] = os.path.join(args['root'], args['dataset_path'])
