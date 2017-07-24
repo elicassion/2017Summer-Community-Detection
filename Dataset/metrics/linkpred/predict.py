@@ -20,9 +20,9 @@ if __name__ == '__main__':
       # 'coau'
     ]
     conferences = [
-      'AAAI', 
+      # 'AAAI', 
       # 'ACL', 
-      # 'SIGCOMM'
+      'SIGCOMM'
     ]
     versions = {
         'cdot': [
@@ -33,11 +33,16 @@ if __name__ == '__main__':
             # ('CDOT_L0_071923', 19),
             # ('CDOT_L0_ori', 19),
             # ('CDOT_L0_072317', 19),
-            ('CDOT_L1_072416', 287)
+            # ('CDOT_L0_072417', 19), # ACL
+            # ('CDOT_L1_072416', 287),
+            ('CDOT_L0_072418', 19), # SIGCOMM
+
         ],
         'bigclam': [
             # ('bigclam_100', 100),
-            ('bigclam_L1_072416', 287)
+            # ('bigclam_L0_072416', 19), # ACL
+            # ('bigclam_L1_072416', 287),
+            ('bigclam_L0_072417', 19), # SIGCOMM
         ]
     }
     dataset_path = 'data'
