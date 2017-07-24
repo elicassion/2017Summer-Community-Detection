@@ -152,7 +152,7 @@ if __name__ == '__main__':
     #     19,
     # ]
 
-    exp = 'link_pred'
+    exp = 'time_pred'
     root = os.path.abspath(os.path.join('..', '..'))
     pos_edges, neg_edges = load_data({'exp': exp, 
                                     'root': root, 
