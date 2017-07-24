@@ -77,7 +77,7 @@ class predictor(object):
         uvt1 = (from_user, to_user, from_time)
         true_t2 = self.uvt1_rec[uvt1]
         predict_p = {}
-        for t in range(1984, 2017):
+        for t in range(1980, 2017):
             result = 0
             for i in range(self.f.shape[1]):
                 result += self.f[from_user][i] * self.f[to_user][i] * \
