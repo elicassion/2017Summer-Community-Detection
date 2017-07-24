@@ -140,13 +140,14 @@ def predict(args):
     print ("tempfilename", tmp_filename)
     subprocess.run('python predict_one.py %s' % tmp_filename, shell=True)
     os.remove(tmp_filename)
-    pos_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.pos.txt'))]
-    neg_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))]
-    auc = roc_auc_score([1] * len(pos_score) + [0] * len(neg_score), pos_score + neg_score)
-    print(datetime.datetime.now(), 'auc: ', auc)
+    pos_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.pos.conf_%s.txt' % args['toleration']))]
+    # neg_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))]
+    # TODO: modify
+    accp = pos_score
+    print(datetime.datetime.now(), 'accp: ', accp)
     sys.stdout.flush()
 
-    args['score'] = auc
+    args['score'] = accp
     return args
 
 
@@ -158,6 +159,7 @@ if __name__ == '__main__':
     conference = sys.argv[4]
     version = sys.argv[5]
     community_count = sys.argv[6]
+    toleration = sys.argv[7]
 
     # community_count = [
     #     19,
@@ -186,7 +188,8 @@ if __name__ == '__main__':
                     'n': 'final',
                     'mode': mode,
                     'conference': conference,
-                    'version': version})
+                    'version': version,
+                    'toleration': toleration})
     # predict({'exp': exp, 'root': root, 'model': model, 'dataset': dataset, 'cc': cc, 'lw': lw, 'n': 'final'})
     gc.collect()
     result += Pool(6).map(predict, to_pred, chunksize=1)
