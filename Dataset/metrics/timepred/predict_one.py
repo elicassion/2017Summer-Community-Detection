@@ -19,7 +19,7 @@ def prdict_edges(predictor, edges, tag, toleration):
     count = 0
     # for edge in random.sample(edges, num):
     for edge in edges:
-        scores.append(predictor.link_predict(*edge, toleration))
+        scores.append(predictor.time_predict(*edge, toleration))
         if count % 100000 == 0:
             print(datetime.datetime.now(), tag, count, scores[-1])
             sys.stdout.flush()
@@ -43,6 +43,9 @@ if __name__ == '__main__':
     sys.stdout.flush()
 
     predictor = model2predictor[args['model']]()
+    # load data
+    data_dir = os.path.join(args['root'], args['dataset_path'], args['mode'], args['conference'])
+    predictor.load_data(data_dir)
     predictor.load_result(args['result_prefix'], args['n'], uname2uid, int(args['cc']))
     print(datetime.datetime.now(), 'predictor init done')
     sys.stdout.flush()
