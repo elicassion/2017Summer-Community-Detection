@@ -66,19 +66,6 @@ def load_edges(data_dir, predictor):
     return edges
 
 
-def prdict_edges(predictor, edges, tag):
-    scores = []
-    count = 0
-    # for edge in random.sample(edges, num):
-    for edge in edges:
-        scores.append(predictor.link_predict(*edge))
-        if count % 100000 == 0:
-            print(datetime.datetime.now(), tag, count, scores[-1])
-            sys.stdout.flush()
-        count += 1
-    return scores
-
-
 def get_neg_edges(edges, predictor, max_uid, num):
     neg_edges = []
     for i in range(num):
