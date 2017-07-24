@@ -131,7 +131,7 @@ def predict(args):
     pos_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.pos.conf_%s.txt' % args['toleration']))]
     # neg_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))]
     # TODO: modify
-    accp = np.sum(pos_score) / int(len(pos_score) * 0.1)
+    accp = np.sum(pos_score) / len(pos_score)
     print(datetime.datetime.now(), 'accp: ', accp)
     sys.stdout.flush()
 
