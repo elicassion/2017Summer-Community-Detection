@@ -70,6 +70,9 @@ class predictor(object):
 
     def time_predict(self, from_user, to_user, from_time, to_time, toleration):
         # TODO: mode
+        # topk: no use of toleration
+        # direct: use toleration to compare
+        # maybe else~
         time_pred_mode = 'topk'
         uvt1 = (from_user, to_user, from_time)
         true_t2 = self.uvt1_rec[uvt1]
