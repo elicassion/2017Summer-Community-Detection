@@ -85,13 +85,17 @@ class predictor(object):
                         norm.pdf(t, self.mu[to_user][i], self.sigma[to_user][i])
             result = 1 - exp(-result)
             predict_p[t] = result
+        print ("predict_p:", predict_p)
         if time_pred_mode is 'topk':
             st_p = sorted(predict_p.items(), key = lambda item:item[1], reverse = True)
             st_p_keys = [item[0] for item in st_p]
             st_p_values = [item[1] for item in st_p]
             # min max norm
             mmnorm = MinMaxScaler()
-            st_p_values = mmnorm.fit_transform(np.array(st_p_values).reshape([1, -1])).reshape([-1]).tolist()
+            st_p_values = mmnorm.fit_transform(np.array(st_p_values)).tolist()
+            # print ("st_p:", st_p_keys)
+            # print (st_p_values)
+            # print (true_t2)
             accumulate_p = 0
             for t2 in true_t2:
                 accumulate_p += st_p_values[st_p_keys.index(t2)]
