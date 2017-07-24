@@ -85,7 +85,7 @@ class predictor(object):
                         norm.pdf(t, self.mu[to_user][i], self.sigma[to_user][i])
             result = 1 - exp(-result)
             predict_p[t] = result
-        print ("predict_p:", predict_p)
+        # print ("predict_p:", predict_p)
         if time_pred_mode is 'topk':
             st_p = sorted(predict_p.items(), key = lambda item:item[1], reverse = True)
             st_p_keys = [item[0] for item in st_p]
