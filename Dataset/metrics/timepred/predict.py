@@ -10,6 +10,7 @@ import pandas as pd
 
 
 if __name__ == '__main__':
+    # Parameters
     models = [
         # 'MAGIC',
         # 'bigclam',
@@ -38,8 +39,10 @@ if __name__ == '__main__':
             ('bigclam_100', 100),
         ]
     }
+    tolerations = np.linspace(0.1, 1, 10).tolist()
+    # Call predictions for each set of parameters
     dataset_path = 'data'
-    expi = 'link_pred'
+    expi = 'time_pred'
     root = os.path.abspath(os.path.join('..', '..'))
     result = pickle.load(open('result.pkl', 'rb')) if os.path.isfile('result.pkl') else []
     data = {'model': [], 'cc': [], 'n': [], 'score': [], 'mode': [], 'conference': [], 'version':[]}
@@ -48,18 +51,20 @@ if __name__ == '__main__':
             for conference in conferences:
                 if versions[model]:
                     for version in versions[model]:
-                        subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s} {5:d}'.format(dataset_path, model, mode, conference, version[0], version[1]), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
-                        result += pickle.load(open('result_batch.pkl', 'rb'))
+                        for toleration in tolerations:
+                            subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s} {5:d} {6:.1f}'.format(dataset_path, model, mode, conference, version[0], version[1], toleration), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+                            result += pickle.load(open('result_batch.pkl', 'rb'))
                 else:
-                    subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s} {5:d}'.format(dataset_path, model, mode, conference, '', 100), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
-                    result += pickle.load(open('result_batch.pkl', 'rb'))
+                    for toleration in tolerations:
+                        subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s} {5:d} {6:.1f}'.format(dataset_path, model, mode, conference, '', 100, toleration), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+                        result += pickle.load(open('result_batch.pkl', 'rb'))
                 pickle.dump(result, open('result.pkl', 'wb'))   
     for i in result:
         for k in data.keys():
             data[k].append(i[k])
     df = pd.DataFrame(data=data)
-    df = df.ix[df.groupby(['model', 'mode', 'conference', 'version'])['score'].idxmax().values, :].reset_index(drop=True)
-    out_filename = os.path.join(root, 'measure', expi, 'link_pred_{date:s}.csv'.format(date=str(datetime.datetime.now()).replace(":", "-")))
+    df = df.ix[df.groupby(['model', 'mode', 'conference', 'version', 'toleration'])['score'].idxmax().values, :].reset_index(drop=True)
+    out_filename = os.path.join(root, 'measure', expi, '{expi:s}_{date:s}.csv'.format(expi=expi, date=str(datetime.datetime.now()).replace(":", "-")))
     if not os.path.exists(os.path.dirname(out_filename)):
         os.makedirs(os.path.dirname(out_filename))
     df.to_csv(out_filename, index=False)

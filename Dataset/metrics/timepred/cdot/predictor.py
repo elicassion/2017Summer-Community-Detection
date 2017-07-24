@@ -55,11 +55,8 @@ class predictor(object):
         # print (np.dot(self.f[0], self.f[1]))
         print (np.dot(norm.pdf(1994, self.mu[0], self.sigma[0]), norm.pdf(1998, self.mu[1], self.sigma[1])))
 
-    def link_predict(self, from_user, to_user, from_time, to_time):
+    def link_predict(self, from_user, to_user, from_time, to_time, toleration):
         # TODO: revise formula
-        # print ()
-        # result = np.dot(self.f[from_user], norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])) * \
-        #             np.dot(self.f[to_user], norm.pdf(to_time, self.mu[to_user], self.sigma[to_user]))
         result = 0
         for i in range(self.f.shape[1]):
             result += self.f[from_user][i] * self.f[to_user][i] * \
