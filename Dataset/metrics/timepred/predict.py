@@ -14,7 +14,7 @@ if __name__ == '__main__':
     # Parameters
     models = [
         # 'MAGIC',
-        'bigclam',
+        # 'bigclam',
         'cdot',
     ]
     modes = [
