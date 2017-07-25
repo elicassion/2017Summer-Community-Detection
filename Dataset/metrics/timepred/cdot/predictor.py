@@ -28,7 +28,20 @@ class predictor(object):
                 t1 = int(tp[0])
                 t2 = int(tp[1])
                 uvt1 = (doc_id, ref_id, t1)
-                # Currently ignore the condition when it has multiple t2
+                if uvt1 not in self.uvt1_rec.keys():
+                    self.uvt1_rec[uvt1] = {}
+                if t2 not in self.uvt1_rec[uvt1].keys():
+                    self.uvt1_rec[uvt1][t2] = 0
+                self.uvt1_rec[uvt1][t2] += 1
+        for line in open(os.path.join(data_dir, 'del_link.txt')):
+            line = line.split('\t')
+            doc_id = self.uname2uid[line[0]]
+            ref_id = self.uname2uid[line[1]]
+            for tpl in line[2:-1]:
+                tp = tpl.split(' ')
+                t1 = int(tp[0])
+                t2 = int(tp[1])
+                uvt1 = (doc_id, ref_id, t1)
                 if uvt1 not in self.uvt1_rec.keys():
                     self.uvt1_rec[uvt1] = {}
                 if t2 not in self.uvt1_rec[uvt1].keys():
