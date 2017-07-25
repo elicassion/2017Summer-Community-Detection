@@ -66,6 +66,18 @@ def load_edges(data_dir, predictor):
     print(str(len(edges)) + " = len(edges)")
     return edges
 
+def get_pos_edges(data_dir, predictor):
+    edges = set()
+    for line in open(os.path.join(data_dir, 'del_link.txt')):
+        line = [i for i in line.split('\t')]
+        doc_id = predictor.uname2uid[line[0]]
+        ref_id = predictor.uname2uid[line[1]]
+        for tpl in line[2:-1]:
+            tp = tpl.split(' ')
+            edges.add((doc_id, ref_id, int(tp[0]), int(tp[1])))
+    print ("Load Pos Edges Done.")
+    return edges
+
 
 def get_neg_edges(edges, predictor, max_uid, num):
     neg_edges = []
@@ -99,7 +111,10 @@ def load_data(args):
     global edges
     edges = load_edges(data_dir, predictor)
     # ujson.dump(edges, open('edges.json', 'w'))
-    pos_edges = random.sample(edges, int(len(edges) * 0.1))
+    if args['mode'] == 's_cite':
+        pos_edges = get_pos_edges(data_dir, predictor)
+    else:
+        pos_edges = random.sample(edges, int(len(edges) * 0.1))
     neg_edges = get_neg_edges(edges, predictor, len(predictor.uname2uid) - 1, int(len(edges) * 0.1))
     print(datetime.datetime.now(), 'load edges done')
     sys.stdout.flush()

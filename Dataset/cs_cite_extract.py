@@ -31,21 +31,19 @@ conferenceIDs = random.sample(all_conferenceIDs, conference_num)
 # print (conferenceIDs)
 
 pid = []
+ref = []
 for conferenceID in conferenceIDs:
     cursor.execute("SELECT PaperID FROM Papers WHERE ConferenceSeriesIDMappedToVenueName = '%s'" % conferenceID)
     for row in cursor.fetchall():
         pid.append(row['PaperID'])
-print (len(pid))
-
-st_ref = time.time()
-cursor.execute("SELECT PaperID, PaperReferenceID FROM PaperReferences WHERE PaperID IN (SELECT PaperID FROM Papers WHERE ConferenceSeriesIDMappedToVenueName = '%s') AND PaperReferenceID IN (SELECT PaperID FROM Papers WHERE ConferenceSeriesIDMappedToVenueName = '%s')" % (conferenceID, conferenceID))
-ref_res = cursor.fetchall()
-print ("Searching Time: %.3f" % (time.time() - st_ref))
-print (len(ref_res))
-
-ref = []
-for row in ref_res:
-    ref.append((row['PaperID'], row['PaperReferenceID']))
+    print (len(pid))
+    st_ref = time.time()
+    cursor.execute("SELECT PaperID, PaperReferenceID FROM PaperReferences WHERE PaperID IN (SELECT PaperID FROM Papers WHERE ConferenceSeriesIDMappedToVenueName = '%s') AND PaperReferenceID IN (SELECT PaperID FROM Papers WHERE ConferenceSeriesIDMappedToVenueName = '%s')" % (conferenceID, conferenceID))
+    ref_res = cursor.fetchall()
+    print ("Searching Time: %.3f" % (time.time() - st_ref))
+    print ("Ref Num: %d" % len(ref_res))
+    for row in ref_res:
+    	ref.append((row['PaperID'], row['PaperReferenceID']))
 
 def load_result(cursor, container, name):
     for row in cursor.fetchall():
@@ -145,7 +143,7 @@ def export_fos(fos_dicts, exdir):
         resfile.write(str(res)+'\n')
     resfile.close()
 
-export_fos(au_fos_all, 'data/cite/%s' % conference)
+export_fos(au_fos_all, 'data/cite/%s' % Ctype)
 
 fos_au_all = [{}, {}, {}, {}]
 fos_au_count = [[], [], [], []]
