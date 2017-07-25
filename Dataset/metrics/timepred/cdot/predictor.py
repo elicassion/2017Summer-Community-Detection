@@ -95,10 +95,13 @@ class predictor(object):
         predict_p = {}
         for t in range(1980, 2017):
             result = 0
-            for i in range(self.f.shape[1]):
-                result += self.f[from_user][i] * self.f[to_user][i] * \
-                        norm.pdf(from_time, self.mu[from_user][i], self.sigma[from_user][i]) * \
-                        norm.pdf(t, self.mu[to_user][i], self.sigma[to_user][i])
+            result = np.sum(self.f[from_user]*self.f[to_user]*\
+                            norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])*\
+                            norm.pdf(t, self.mu[to_user], self.sigma[to_user]))
+            # for i in range(self.f.shape[1]):
+            #     result += self.f[from_user][i] * self.f[to_user][i] * \
+            #             norm.pdf(from_time, self.mu[from_user][i], self.sigma[from_user][i]) * \
+            #             norm.pdf(t, self.mu[to_user][i], self.sigma[to_user][i])
             result = 1 - exp(-result)
             predict_p[t] = result
         # print ("predict_p:", predict_p)
