@@ -4,8 +4,8 @@ import random
 mode = 'cite'
 conferences = [
 	'AAAI',
-	# 'ACL',
-	# 'SIGCOMM'
+	'ACL',
+	'SIGCOMM'
 ]
 sp_mode = 's_' + mode
 
@@ -24,7 +24,7 @@ def load_edges(data_dir):
         aus.add(ref_id)
         if doc_id not in edges.keys():
         	edges[doc_id] = {}
-        if ref_id not in edges.keys():
+        if ref_id not in edges[doc_id].keys():
         	edges[doc_id][ref_id] = []
         for tpl in line[2:-1]:
             tp = tpl.split(' ')
@@ -52,34 +52,41 @@ def export_sp_result(fdir, d_e, e):
 
 
 for conference in conferences:
+	print ("Deleting %s" % conference)
 	data_dir = os.path.join('data', mode, conference)
 	edges, aus, edges_count = load_edges(data_dir)
 
 	del_edges = {}
 	del_edges_count = 0
+	print ("all edges: %d" % edges_count)
+	print ("all aus: %d" % len(aus))
 
 	while del_edges_count < edges_count * 0.2:
-		dau, rau = random.sample(aus)
-		if len(edges[dau]) > 1 and len(edges[rau]) > 1:
-			if rau in edges[dau].keys():
-				if dau not in del_edges.keys():
-					del_edges[dau] = {}
-				if rau not in del_edges[dau].keys():
-					del_edges[dau][rau] = []
-				for edge in edges[dau][rau]:
-					del_edges[dau][rau].append(edge)
-					del_edges_count += 1
-				edges[dau].pop(rau)
+		if del_edges_count and del_edges_count % int(edges_count * 0.02) == 0:
+			print ("deleted edges: %d" % del_edges_count)
 
-			if dau in edges[rau].keys():
-				if rau not in del_edges.keys():
-					del_edges[rau] = {}
-				if dau not in del_edges[rau].keys():
-					del_edges[rau][dau] = []
-				for edge in edges[dau][rau]:
-					del_edges[dau][rau].append(edge)
-					del_edges_count += 1
-				edges[rau].pop(dau)
+		dau = random.sample(edges.keys(), 1)[0]
+		if len(edges[dau]) > 1:
+			rau = random.sample(edges[dau].keys(), 1)[0]
+			if dau not in del_edges.keys():
+				del_edges[dau] = {}
+			if rau not in del_edges[dau].keys():
+				del_edges[dau][rau] = []
+			for edge in edges[dau][rau]:
+				del_edges[dau][rau].append(edge)
+				del_edges_count += 1
+			edges[dau].pop(rau)
+
+			# if rau in edges.keys() and len(edges[rau]) > 1:
+			# 	if dau in edges[rau].keys():
+			# 		if rau not in del_edges.keys():
+			# 			del_edges[rau] = {}
+			# 		if dau not in del_edges[rau].keys():
+			# 			del_edges[rau][dau] = []
+			# 		for edge in edges[rau][dau]:
+			# 			del_edges[rau][dau].append(edge)
+			# 			del_edges_count += 1
+			# 		edges[rau].pop(dau)
 
 	sp_data_dir = os.path.join('data', sp_mode, conference)
 	if not os.path.exists(sp_data_dir):
