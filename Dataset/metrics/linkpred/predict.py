@@ -20,9 +20,9 @@ if __name__ == '__main__':
       # 'coau'
     ]
     conferences = [
-      # 'AAAI', 
+      'AAAI', 
       # 'ACL', 
-      'SIGCOMM'
+      # 'SIGCOMM'
     ]
     versions = {
         'cdot': [
@@ -33,16 +33,26 @@ if __name__ == '__main__':
             # ('CDOT_L0_071923', 19),
             # ('CDOT_L0_ori', 19),
             # ('CDOT_L0_072317', 19),
-            # ('CDOT_L0_072417', 19), # ACL
             # ('CDOT_L1_072416', 287),
-            ('CDOT_L0_072418', 19), # SIGCOMM
+            ('CDOT_L2_072422', 287),
+            # ('CDOT_L0_072417', 19), # ACL
+            # ('CDOT_L1_072422', 278), # ACL
+            # ('CDOT_L0_072418', 19), # SIGCOMM
+            # ('CODT_L1_072422', 265), #SIGCOMM
+            
+            
 
         ],
         'bigclam': [
             # ('bigclam_100', 100),
+            ('bigclam_L1_072416', 287),
+            # ('bigclam_L2_072414', 1287),
             # ('bigclam_L0_072416', 19), # ACL
-            # ('bigclam_L1_072416', 287),
-            ('bigclam_L0_072417', 19), # SIGCOMM
+            # ('bigclam_L1_072416', 278), # ACL
+            # ('bigclam_L2_072500', 1204), # ACL
+            # ('bigclam_L0_072417', 19), # SIGCOMM
+            # ('bigclam_L1_072417', 265), # SIGCOMM
+            # ('bigclam_L2_072500', 1060), # SIGCOMM
         ]
     }
     dataset_path = 'data'
