@@ -20,40 +20,50 @@ if __name__ == '__main__':
       # 'coau'
     ]
     conferences = [
-      'AAAI', 
-      # 'ACL', 
-      # 'SIGCOMM'
+      'AAAI', # 19 287 1287 
+      'ACL', # 19 278 1204 
+      'SIGCOMM' # 19 265 1060 
     ]
     versions = {
-        'cdot': [
-            # ('CDOT2', 100),
-            # ('CDOT3', 100),
-            # ('CDOT8', 100),
-            # ('CDOT_L0', 19),
-            # ('CDOT_L0_071923', 19),
-            # ('CDOT_L0_ori', 19),
-            # ('CDOT_L0_072317', 19),
-            # ('CDOT_L1_072416', 287),
-            ('CDOT_L2_072422', 287),
-            # ('CDOT_L0_072417', 19), # ACL
-            # ('CDOT_L1_072422', 278), # ACL
-            # ('CDOT_L0_072418', 19), # SIGCOMM
-            # ('CODT_L1_072422', 265), #SIGCOMM
-            
-            
+        'cdot': {
+            'AAAI':[ 
+                # ('CDOT2', 100),
+                # ('CDOT3', 100),
+                # ('CDOT8', 100),
+                # ('CDOT_L0', 19),
+                # ('CDOT_L0_071923', 19),
+                # ('CDOT_L0_ori', 19),
+                # ('CDOT_L0_072317', 19),
+                # ('CDOT_L1_072416', 287),
+                ('CDOT_L2_072422', 1287),
+            ],
+            'ACL':[ 
+                # ('CDOT_L0_072417', 19), # ACL
+                ('CDOT_L1_072422', 278), # ACL
+            ],
+            'SIGCOMM':[
+                # ('CDOT_L0_072418', 19), # SIGCOMM
+                ('CDOT_L1_072422', 265), #SIGCOMM
+            ]
+        },
+        'bigclam': {
+            'AAAI':[
+                # ('bigclam_100', 100),
+                ('bigclam_L1_072416', 287),
+                ('bigclam_L2_072414', 1287),
+            ],
+            'ACL':[
+                # ('bigclam_L0_072416', 19), # ACL
+                ('bigclam_L1_072416', 278), # ACL
+                ('bigclam_L2_072500', 1204), # ACL
+            ],
+            'SIGCOMM':[
+                # ('bigclam_L0_072417', 19), # SIGCOMM
+                ('bigclam_L1_072417', 265), # SIGCOMM
+                ('bigclam_L2_072500', 1060), # SIGCOMM
+            ]
 
-        ],
-        'bigclam': [
-            # ('bigclam_100', 100),
-            ('bigclam_L1_072416', 287),
-            # ('bigclam_L2_072414', 1287),
-            # ('bigclam_L0_072416', 19), # ACL
-            # ('bigclam_L1_072416', 278), # ACL
-            # ('bigclam_L2_072500', 1204), # ACL
-            # ('bigclam_L0_072417', 19), # SIGCOMM
-            # ('bigclam_L1_072417', 265), # SIGCOMM
-            # ('bigclam_L2_072500', 1060), # SIGCOMM
-        ]
+        }
     }
     dataset_path = 'data'
     expi = 'link_pred'
@@ -64,7 +74,7 @@ if __name__ == '__main__':
         for mode in modes:
             for conference in conferences:
                 if versions[model]:
-                    for version in versions[model]:
+                    for version in versions[model][conference]:
                         subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s} {5:d}'.format(dataset_path, model, mode, conference, version[0], version[1]), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
                         result += pickle.load(open('result_batch.pkl', 'rb'))
                 else:

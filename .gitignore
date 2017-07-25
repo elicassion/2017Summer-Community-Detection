@@ -5,3 +5,6 @@ Dataset/res/*
 *.csv
 *.tgz
 *.zip
+Dataset/.ipynb_checkpoints
+Dataset/.ipynb_checkpoints/*
+tmp-*.txt
