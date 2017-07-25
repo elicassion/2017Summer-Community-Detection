@@ -28,19 +28,26 @@ class predictor(object):
         lines = res.split('\n')
         au_num = len(uname2uid)
         self.f = np.zeros([au_num, cc])
+        except_count = 0
         for au_id, line in enumerate(lines[1:-1]):
             items = line.split('\t')
-            au = uname2uid[items[0]]
+            try:
+                au = uname2uid[items[0]]
+            except:
+                except_count += 1
+                continue
             edges = items[1].strip(' ')
             if edges is '0':
                 continue
             edges = edges.split(' ')
             for i in range(1, len(edges)-1, 2):
                 comm_id = int(edges[i])
+                # print (au_id)
                 self.f[au_id][comm_id] = float(edges[i+1])
         self.U = au_num
         self.C = cc
-        print ("load result done.")
+        print ("Predictor Load Result Done.")
+        print ("Exception Count: %d, Percentile: %.2f" % (except_count, except_count/au_num))
         print (np.dot(self.f[0], self.f[1]))
 
     def link_predict(self, from_user, to_user, ft, tt):

@@ -12,6 +12,7 @@ sp_mode = 's_' + mode
 
 def load_edges(data_dir):
     edges = {}
+    re_edges = {}
     aus = set()
     edges_count = 0
     for line in open(os.path.join(data_dir, 'link.txt'), "r"):
@@ -26,11 +27,16 @@ def load_edges(data_dir):
         	edges[doc_id] = {}
         if ref_id not in edges[doc_id].keys():
         	edges[doc_id][ref_id] = []
+        if ref_id not in re_edges.keys():
+        	re_edges[ref_id] = {}
+        if doc_id not in re_edges[ref_id].keys():
+        	re_edges[ref_id][doc_id] = []
         for tpl in line[2:-1]:
             tp = tpl.split(' ')
             edges[doc_id][ref_id].append((int(tp[0]), int(tp[1])))
+            re_edges[ref_id][doc_id].append((int(tp[0]), int(tp[1])))
             edges_count += 1
-    return edges, aus, edges_count
+    return edges, re_edges, aus, edges_count
 
 def export_link(filename, d):
 	f = open(filename, "w")
@@ -43,7 +49,7 @@ def export_link(filename, d):
 				f.write("%d %d\t" % (t1, t2))
 			f.write('\n')
 
-def export_sp_result(fdir, d_e, e):
+def export_sp_result(fdir, e, d_e):
 	d_e_filename = os.path.join(fdir, 'del_link.txt')
 	export_link(d_e_filename, d_e)
 	e_filename = os.path.join(fdir, 'link.txt')
@@ -54,7 +60,7 @@ def export_sp_result(fdir, d_e, e):
 for conference in conferences:
 	print ("Deleting %s" % conference)
 	data_dir = os.path.join('data', mode, conference)
-	edges, aus, edges_count = load_edges(data_dir)
+	edges, re_edges, aus, edges_count = load_edges(data_dir)
 
 	del_edges = {}
 	del_edges_count = 0
@@ -68,14 +74,16 @@ for conference in conferences:
 		dau = random.sample(edges.keys(), 1)[0]
 		if len(edges[dau]) > 1:
 			rau = random.sample(edges[dau].keys(), 1)[0]
-			if dau not in del_edges.keys():
-				del_edges[dau] = {}
-			if rau not in del_edges[dau].keys():
-				del_edges[dau][rau] = []
-			for edge in edges[dau][rau]:
-				del_edges[dau][rau].append(edge)
-				del_edges_count += 1
-			edges[dau].pop(rau)
+			if rau in re_edges.keys() and len(re_edges[rau]) > 1:
+				if dau not in del_edges.keys():
+					del_edges[dau] = {}
+				if rau not in del_edges[dau].keys():
+					del_edges[dau][rau] = []
+				for edge in edges[dau][rau]:
+					del_edges[dau][rau].append(edge)
+					del_edges_count += 1
+				edges[dau].pop(rau)
+				re_edges[rau].pop(dau)
 
 			# if rau in edges.keys() and len(edges[rau]) > 1:
 			# 	if dau in edges[rau].keys():

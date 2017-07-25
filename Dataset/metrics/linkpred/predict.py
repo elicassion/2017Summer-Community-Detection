@@ -16,12 +16,13 @@ if __name__ == '__main__':
         'cdot',
     ]
     modes = [
-      'cite', 
-      # 'coau'
+      # 'cite', 
+      # 'coau',
+      's_cite'
     ]
     conferences = [
       'AAAI', # 19 287 1287 
-      'ACL', # 19 278 1204 
+      # 'ACL', # 19 278 1204 
       'SIGCOMM' # 19 265 1060 
     ]
     versions = {
@@ -35,32 +36,40 @@ if __name__ == '__main__':
                 # ('CDOT_L0_ori', 19),
                 # ('CDOT_L0_072317', 19),
                 # ('CDOT_L1_072416', 287),
-                ('CDOT_L2_072422', 1287),
+                # ('CDOT_L2_072422', 1287),
+                ('CDOT_L0_072515', 19),
+                ('CDOT_L1_072515', 287),
             ],
             'ACL':[ 
                 # ('CDOT_L0_072417', 19), # ACL
-                ('CDOT_L1_072422', 278), # ACL
+                # ('CDOT_L1_072422', 278), # ACL
             ],
             'SIGCOMM':[
                 # ('CDOT_L0_072418', 19), # SIGCOMM
-                ('CDOT_L1_072422', 265), #SIGCOMM
+                # ('CDOT_L1_072422', 265), #SIGCOMM
+                ('CDOT_L0_072515', 19), # SIGCOMM
+                ('CDOT_L1_072515', 265), #SIGCOMM
             ]
         },
         'bigclam': {
             'AAAI':[
                 # ('bigclam_100', 100),
-                ('bigclam_L1_072416', 287),
-                ('bigclam_L2_072414', 1287),
+                # ('bigclam_L1_072416', 287),
+                # ('bigclam_L2_072414', 1287),
+                ('bigclam_L0_072515', 19),
+                ('bigclam_L1_072515', 287),
             ],
             'ACL':[
                 # ('bigclam_L0_072416', 19), # ACL
-                ('bigclam_L1_072416', 278), # ACL
-                ('bigclam_L2_072500', 1204), # ACL
+                # ('bigclam_L1_072416', 278), # ACL
+                # ('bigclam_L2_072500', 1204), # ACL
             ],
             'SIGCOMM':[
                 # ('bigclam_L0_072417', 19), # SIGCOMM
-                ('bigclam_L1_072417', 265), # SIGCOMM
-                ('bigclam_L2_072500', 1060), # SIGCOMM
+                # ('bigclam_L1_072417', 265), # SIGCOMM
+                # ('bigclam_L2_072500', 1060), # SIGCOMM
+                ('bigclam_L0_072515', 19), # SIGCOMM
+                ('bigclam_L1_072515', 265), # SIGCOMM
             ]
 
         }
