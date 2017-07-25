@@ -50,7 +50,7 @@ if __name__ == '__main__':
     expi = 'time_pred'
     root = os.path.abspath(os.path.join('..', '..'))
     result = pickle.load(open('result.pkl', 'rb')) if os.path.isfile('result.pkl') else []
-    data = {'model': [], 'cc': [], 'n': [], 'score': [], 'mode': [], 'conference': [], 'version':[]}
+    data = {'model': [], 'cc': [], 'n': [], 'score': [], 'mode': [], 'conference': [], 'version':[], 'toleration':[]}
     for model in models:
         for mode in modes:
             for conference in conferences:
