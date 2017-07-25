@@ -70,7 +70,7 @@ if __name__ == '__main__':
         for k in data.keys():
             data[k].append(i[k])
     df = pd.DataFrame(data=data)
-    df = df.ix[df.groupby(['model', 'mode', 'conference', 'version', 'toleration', 'predict_mode'])['score'].idxmax().values, :].reset_index(drop=True)
+    df = df.ix[df.groupby(['model', 'mode', 'conference', 'version', 'toleration'])['score'].idxmax().values, :].reset_index(drop=True)
     out_filename = os.path.join(root, 'measure', expi, '{expi:s}_{date:s}.csv'.format(expi=expi, date=str(datetime.datetime.now()).replace(":", "-")))
     if not os.path.exists(os.path.dirname(out_filename)):
         os.makedirs(os.path.dirname(out_filename))
