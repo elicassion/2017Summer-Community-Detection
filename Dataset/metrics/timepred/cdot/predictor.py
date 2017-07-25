@@ -99,7 +99,7 @@ class predictor(object):
                 min_e_t2 = t2
         return min_e, min_e_t2
 
-    def time_predict(self, from_user, to_user, from_time, to_time, toleration, predict_mode):
+    def time_predict(self, from_user, to_user, from_time, toleration, predict_mode):
         # TODO: mode
         # map: no use of toleration
         # direct: use toleration to compare

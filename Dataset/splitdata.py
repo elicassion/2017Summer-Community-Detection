@@ -3,9 +3,10 @@ import json
 import random
 mode = 'cite'
 conferences = [
-	'AAAI',
-	'ACL',
-	'SIGCOMM'
+	# 'AAAI',
+	# 'ACL',
+	# 'SIGCOMM',
+	'MIXED_100'
 ]
 sp_mode = 's_' + mode
 

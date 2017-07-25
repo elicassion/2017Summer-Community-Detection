@@ -23,9 +23,9 @@ if __name__ == '__main__':
       's_cite',
     ]
     conferences = [
-      'AAAI', # 19 287 1287 
+      # 'AAAI', # 19 287 1287 
       # 'ACL', # 19 278 1204 
-      # 'SIGCOMM' # 19 265 1060 
+      'SIGCOMM' # 19 265 1060 
     ]
     versions = {
         'cdot': {
