@@ -74,10 +74,12 @@ class predictor(object):
     def calc_error(self, x, y):
         return abs(x-y)/(2016-1980)
 
-    def calc_min_error(self, p_t2, true_t2, toleration):
+    def calc_min_error(self, p_t2, true_t2, used_true_t2, toleration):
         min_e = 99999
         min_e_t2 = None
         for t2 in true_t2.keys():
+            if t2 in used_true_t2:
+                continue
             calc_e = self.calc_error(p_t2, t2)
             if calc_e < min_e:
                 min_e = calc_e
@@ -92,6 +94,10 @@ class predictor(object):
 
         uvt1 = (from_user, to_user, from_time)
         true_t2 = self.uvt1_rec[uvt1]
+        true_t2_st = sorted(true_t2.items(), key = lambda item:item[1], reverse = True)
+        true_t2 = {}
+        for item in true_t2_st:
+            true_t2[item[0]] = item[1]
         predict_p = {}
         for t in range(1980, 2017):
             result = 0
@@ -132,10 +138,12 @@ class predictor(object):
             sum_freq = 0
             for t2, freq in true_t2.items():
                 sum_freq += freq
+            used_true_t2 = set()
             for i in range(len(true_t2)):
                 p_t2 = st_p_keys[i]
-                min_error, min_e_t2 = self.calc_min_error(p_t2, true_t2, toleration)
+                min_error, min_e_t2 = self.calc_min_error(p_t2, true_t2, used_true_t2, toleration)
                 # print (min_error, min_e_t2)
+                used_true_t2.add(min_e_t2)
                 if min_error <= toleration:
                     result += 1 * true_t2[min_e_t2]
             result = result / sum_freq
