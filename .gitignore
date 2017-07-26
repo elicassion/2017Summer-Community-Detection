@@ -1,4 +1,5 @@
 *.pdf
+*.txt
 *.rar
 Dataset/res/*
 *.json
