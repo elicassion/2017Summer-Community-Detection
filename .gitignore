@@ -11,9 +11,9 @@ Dataset/.ipynb_checkpoints/*
 */fos_*.txt
 */c_fos_*.txt
 *.xlsx
-Dataset/gen_data/*/*.edges
-Dataset/gen_data/*/*.comm
-Dataset/gen_data/*/*.stats
-Dataset/gen_data/*/*.timeline
+*.edges
+*.comm
+*.stats
+*.timeline
 Dataset/data/
 */link.txt
