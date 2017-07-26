@@ -6,7 +6,8 @@ conferences = [
 	# 'AAAI',
 	# 'ACL',
 	# 'SIGCOMM',
-	'MIXED_100'
+	# 'MIXED_100',
+	'MIXED_1203'
 ]
 sp_mode = 's_' + mode
 
