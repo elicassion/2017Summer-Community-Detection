@@ -15,3 +15,4 @@ Dataset/gen_data/*.edges
 Dataset/gen_data/*.comm
 Dataset/gen_data/*.stats
 Dataset/gen_data/*.timeline
+Dataset/data/*.txt
