@@ -7,13 +7,14 @@ Dataset/res/*
 *.zip
 Dataset/.ipynb_checkpoints
 Dataset/.ipynb_checkpoints/*
-*/tmp-*.txt
+tmp-*.txt
 */fos_*.txt
-*/c_fos_*.txt
+c_fos_*.txt
 *.xlsx
 *.edges
 *.comm
 *.stats
 *.timeline
-Dataset/data/
+Dataset/data/*
+Dataset/measure/*
 */link.txt
