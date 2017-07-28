@@ -2,6 +2,7 @@
 *.txt
 *.rar
 Dataset/res/*
+Tmp/
 *.json
 *.csv
 *.tgz
