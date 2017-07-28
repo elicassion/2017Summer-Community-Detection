@@ -116,7 +116,11 @@ def load_data(args):
     else:
         pos_edges = random.sample(edges, int(len(edges) * 0.1))
     neg_edges = get_neg_edges(edges, predictor, len(predictor.uname2uid) - 1, int(len(edges) * 0.1))
+<<<<<<< HEAD
     print(datetime.datetime.now(), 'Gen Edges Done.')
+=======
+    print(datetime.datetime.now(), 'load edges done')
+>>>>>>> 46bfea0b7b6e47da39f19552720ec7bd3164ce59
     sys.stdout.flush()
     return pos_edges, neg_edges
 
