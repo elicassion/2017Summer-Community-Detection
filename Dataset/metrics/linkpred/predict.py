@@ -12,7 +12,7 @@ import pandas as pd
 if __name__ == '__main__':
     models = [
         # 'MAGIC',
-        'bigclam',
+        # 'bigclam',
         'cdot',
     ]
     modes = [
@@ -21,8 +21,8 @@ if __name__ == '__main__':
       's_cite'
     ]
     conferences = [
-      'AAAI', # 19 287 1287 
-      'ACL', # 19 278 1204 
+      # 'AAAI', # 19 287 1287 
+      # 'ACL', # 19 278 1204 
       'SIGCOMM' # 19 265 1060 
     ]
     versions = {
@@ -54,7 +54,8 @@ if __name__ == '__main__':
                 # ('CDOT_L0_072518', 19), # SIGCOMM
                 # ('CDOT_L0_072521', 19), # SIGCOMM
                 # ('CDOT_L1_072518', 265), #SIGCOMM
-                ('CDOT_L1_072522', 265), #SIGCOMM
+                # ('CDOT_L1_072522', 265), #SIGCOMM
+                ('CDOT_L0_072816', 19), #SIGCOMM
             ]
         },
         'bigclam': {
