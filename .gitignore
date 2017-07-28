@@ -16,8 +16,12 @@ c_fos_*.txt
 *.comm
 *.stats
 *.timeline
+Dataset/data
 Dataset/data/*
+Dataset/data/cite
+Dataset/data/coau
+Dataset/data/s_cite
 Dataset/data/s_cite/*
 Dataset/data/s_cite/MIEXD_100/*
-Dataset/measure/
+Dataset/measure/*
 */link.txt
