@@ -17,5 +17,7 @@ c_fos_*.txt
 *.stats
 *.timeline
 Dataset/data/
+Dataset/data/cite/
+Dataset/data/cite/MIEXD_100/
 Dataset/measure/
 */link.txt
