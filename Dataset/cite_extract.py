@@ -26,6 +26,12 @@ def load_result(cursor, container, name):
         container.append(row[name])
     return container
 
+def load_results(cursor, containers, names):
+	for row in cursor.fetchall():
+		for container, name in zip(containers, names):
+			container.append(row[name])
+	return containers
+
 def export_fos(fos_dicts, exdir):
     if not os.path.exists(exdir):
         os.makedirs(exdir)
@@ -69,6 +75,8 @@ for row in ref_res:
 
 
 auid_link_dict = {}
+# add title
+au_time_title = {}
 link_count = 1
 st_build = time.time()
 for refp, orip in ref:
@@ -76,23 +84,32 @@ for refp, orip in ref:
     refau = []
     oriyear = []
     refyear = []
+    orititle = []
+    reftitle = []
     cursor.execute("SELECT AuthorID FROM PaperAuthorAffiliations WHERE PaperID = '%s' "% refp)
     load_result(cursor, refau, 'AuthorID')
-    cursor.execute("SELECT PaperPublishYear FROM Papers WHERE PaperID = '%s'" % refp)
-    load_result(cursor, refyear, 'PaperPublishYear')
+    cursor.execute("SELECT PaperPublishYear, NormalizedPaperTitle FROM Papers WHERE PaperID = '%s'" % refp)
+    load_results(cursor, [refyear, reftitle], ['PaperPublishYear', 'NormalizedPaperTitle'])
         
     cursor.execute("SELECT AuthorID FROM PaperAuthorAffiliations WHERE PaperID = '%s' "% orip)
     load_result(cursor, oriau, 'AuthorID')
-    cursor.execute("SELECT PaperPublishYear FROM Papers WHERE PaperID = '%s'" % orip)
-    load_result(cursor, oriyear, 'PaperPublishYear')
+    cursor.execute("SELECT PaperPublishYear, NormalizedPaperTitle FROM Papers WHERE PaperID = '%s'" % orip)
+    load_results(cursor, [oriyear, orititle], ['PaperPublishYear', 'NormalizedPaperTitle'])
+
 
     for au in oriau:
         if au not in auid_link_dict.keys():
             auid_link_dict[au] = {}
+        if au not in au_time_title.keys():
+        	au_time_title[au] = set()
+        au_time_title[au].add((oriyear[0], orititle[0]))
         for rau in refau:
             if rau not in auid_link_dict[au].keys():
                 auid_link_dict[au][rau] = []
+            if rau not in au_time_title.keys():
+            	au_time_title[rau] = set()
             auid_link_dict[au][rau].append((oriyear[0], refyear[0]))
+            au_time_title[rau].add((refyear[0], reftitle[0]))
             link_count += 1
 print ("build time: %.3f" % (time.time() - st_build))
 print ("link count: %d" % link_count)
@@ -112,7 +129,7 @@ def export_link(link_dict, exdir):
     f.close()
     print ("export %s" % filename)
 
-export_link(auid_link_dict, 'data/cite/%s' % conference)
+export_link(auid_link_dict, 'data/test_title/%s' % conference)
 
 au_set = set()
 for au in auid_link_dict.keys():
@@ -131,7 +148,7 @@ for i in range(4):
         au_fos_all[i][au]  = fos
         au_fos_count[i].append(len(fos))
 
-export_fos(au_fos_all, 'data/cite/%s' % conference)
+export_fos(au_fos_all, 'data/test_title/%s' % conference)
 
 fos_au_all = [{}, {}, {}, {}]
 fos_au_count = [[], [], [], []]
@@ -165,4 +182,4 @@ def com_export_fos(fos_au_dicts, exdir):
         f.close()
         print ("export %s %d communities" % (filename, len(fos_au_dicts[i])))
 
-com_export_fos(fos_au_all, 'data/cite/%s' % conference)
+com_export_fos(fos_au_all, 'data/test_title/%s' % conference)
