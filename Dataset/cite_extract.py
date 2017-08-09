@@ -131,6 +131,18 @@ def export_link(link_dict, exdir):
 
 export_link(auid_link_dict, 'data/test_title/%s' % conference)
 
+def export_title(au_title_dict, exdir):
+	if not os.path.exists(exdir):
+		os.makedirs(exdir)
+	filename = os.path.join(exdir, 'docs.txt')
+	f = open(filename, 'w')
+	for au in au_title_dict.keys():
+		for time, title in au_title_dict[au]:
+			f.write(au+'\t'+str(time)+'\t'+title+'\n')
+	print ("export %s" % filename)
+	
+export_title(au_time_title, 'data/test_title/%s' % conference)
+
 au_set = set()
 for au in auid_link_dict.keys():
     au_set.add(au)
