@@ -52,7 +52,7 @@ def export_fos(fos_dicts, exdir):
         print ("export %s: %d fos" % (filename, count))
 
 
-conference = 'SIGCOMM'
+conference = 'AAAI'
 cursor.execute("SELECT ConferenceSeriesID FROM ConferenceSeries WHERE ShortName = '%s'" % conference)
 conferenceID = cursor.fetchall()[0]['ConferenceSeriesID']
 print (conferenceID)
@@ -132,7 +132,7 @@ def export_link(link_dict, exdir):
                 f.write(str(link_dict[au][rau][i][0])+' '+str(link_dict[au][rau][i][1])+' '+\
                         str(link_dict[au][rau][i][2])+' '+str(link_dict[au][rau][i][3])+'\t')
             f.write(str(link_dict[au][rau][ylen-1][0])+' '+str(link_dict[au][rau][ylen-1][1])+' '+\
-                    str(link_dict[au][rau][ylen-1][2])+' '+str(link_dict[au][rau][ylen-1][3])'\n')
+                    str(link_dict[au][rau][ylen-1][2])+' '+str(link_dict[au][rau][ylen-1][3])+'\n')
     f.close()
     print ("export %s" % filename)
 
@@ -148,7 +148,6 @@ def export_title(au_title_dict, exdir):
         for time, title in au_title_dict[au]:
             f.write(au+'\t'+str(time)+'\t'+title+'\n')
     print ("export %s" % filename)
-    f.close()
 
 def export_pid_title(pid_title_dict, exdir):
     if not os.path.exists(exdir):
