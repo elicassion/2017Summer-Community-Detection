@@ -52,7 +52,7 @@ def export_fos(fos_dicts, exdir):
         print ("export %s: %d fos" % (filename, count))
 
 
-conference = 'AAAI'
+conference = 'SIGCOMM'
 cursor.execute("SELECT ConferenceSeriesID FROM ConferenceSeries WHERE ShortName = '%s'" % conference)
 conferenceID = cursor.fetchall()[0]['ConferenceSeriesID']
 print (conferenceID)
@@ -123,18 +123,25 @@ def export_link(link_dict, exdir):
     if not os.path.exists(exdir):
         os.makedirs(exdir)
     filename = os.path.join(exdir, 'link.txt')
+    gilename = os.path.join(exdir, 'links.txt')
     f = open(filename, 'w')
+    g = open(gilename, 'w')
     for au in link_dict.keys():
         for rau in link_dict[au].keys():
             f.write(au+'\t'+rau+'\t')
+            g.write(au+'\t'+rau+'\t')
             ylen = len(link_dict[au][rau])
             for i in range(ylen-1):
                 f.write(str(link_dict[au][rau][i][0])+' '+str(link_dict[au][rau][i][1])+' '+\
                         str(link_dict[au][rau][i][2])+' '+str(link_dict[au][rau][i][3])+'\t')
+                g.write(str(link_dict[au][rau][i][0])+' '+str(link_dict[au][rau][i][1])+'\t')
             f.write(str(link_dict[au][rau][ylen-1][0])+' '+str(link_dict[au][rau][ylen-1][1])+' '+\
                     str(link_dict[au][rau][ylen-1][2])+' '+str(link_dict[au][rau][ylen-1][3])+'\n')
+            g.write(str(link_dict[au][rau][ylen-1][0])+' '+str(link_dict[au][rau][ylen-1][1])+'\n')
     f.close()
+    g.close()
     print ("export %s" % filename)
+    print ("export %s" % gilename)
 
 export_link(auid_link_dict, 'data/test_title/%s' % conference)
 
