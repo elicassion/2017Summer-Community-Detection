@@ -9,18 +9,6 @@ import codecs
 #			trans_doc.txt
 #				format: {auid \t year \t doc_id}
 
-def export_title(au_title_dict, exdir):
-	if not os.path.exists(exdir):
-		os.makedirs(exdir)
-	filename = os.path.join(exdir, 'docs.txt')
-	f = open(filename, 'w')
-	for au in au_title_dict.keys():
-		for time, title in au_title_dict[au]:
-			f.write(au+'\t'+str(time)+'\t'+title+'\n')
-	print ("export %s" % filename)
-	
-export_title(au_time_title, 'data/test_title/%s' % conference)
-
 conferences = ['AAAI', 'SIGCOMM']
 for conference in conferences:
 	indir = 'data/test_title/%s' % conference
@@ -57,4 +45,4 @@ for conference in conferences:
 	id_title_filename = os.path.join(indir, 'id_year_title.txt')
 	idtfff = open(id_title_filename, "w")
 	for i in range(count):
-		idtfff.write("%s\t%s\t%s\n" % (str(i), str(id_title[i][1]), str(id_title[i][2])))
+		idtfff.write("%s\t%s\t%s\n" % (str(i), str(id_title[i][0]), str(id_title[i][1])))
