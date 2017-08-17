@@ -27,10 +27,10 @@ def load_result(cursor, container, name):
     return container
 
 def load_results(cursor, containers, names):
-	for row in cursor.fetchall():
-		for container, name in zip(containers, names):
-			container.append(row[name])
-	return containers
+    for row in cursor.fetchall():
+        for container, name in zip(containers, names):
+            container.append(row[name])
+    return containers
 
 def export_fos(fos_dicts, exdir):
     if not os.path.exists(exdir):
@@ -52,7 +52,7 @@ def export_fos(fos_dicts, exdir):
         print ("export %s: %d fos" % (filename, count))
 
 
-conference = 'AAAI'
+conference = 'SIGCOMM'
 cursor.execute("SELECT ConferenceSeriesID FROM ConferenceSeries WHERE ShortName = '%s'" % conference)
 conferenceID = cursor.fetchall()[0]['ConferenceSeriesID']
 print (conferenceID)
@@ -77,6 +77,7 @@ for row in ref_res:
 auid_link_dict = {}
 # add title
 au_time_title = {}
+p_time_title = {}           # format: p_time_title[pid]=title
 link_count = 1
 st_build = time.time()
 for refp, orip in ref:
@@ -96,19 +97,23 @@ for refp, orip in ref:
     cursor.execute("SELECT PaperPublishYear, NormalizedPaperTitle FROM Papers WHERE PaperID = '%s'" % orip)
     load_results(cursor, [oriyear, orititle], ['PaperPublishYear', 'NormalizedPaperTitle'])
 
+    if orip not in p_time_title.keys():
+        p_time_title[orip] = orititle[0]
+    if refp not in p_time_title.keys():
+        p_time_title[refp] = reftitle[0]
 
     for au in oriau:
         if au not in auid_link_dict.keys():
             auid_link_dict[au] = {}
         if au not in au_time_title.keys():
-        	au_time_title[au] = set()
+            au_time_title[au] = set()
         au_time_title[au].add((oriyear[0], orititle[0]))
         for rau in refau:
             if rau not in auid_link_dict[au].keys():
                 auid_link_dict[au][rau] = []
             if rau not in au_time_title.keys():
-            	au_time_title[rau] = set()
-            auid_link_dict[au][rau].append((oriyear[0], refyear[0]))
+                au_time_title[rau] = set()
+            auid_link_dict[au][rau].append((oriyear[0], refyear[0], orip, refp))
             au_time_title[rau].add((refyear[0], reftitle[0]))
             link_count += 1
 print ("build time: %.3f" % (time.time() - st_build))
@@ -124,24 +129,39 @@ def export_link(link_dict, exdir):
             f.write(au+'\t'+rau+'\t')
             ylen = len(link_dict[au][rau])
             for i in range(ylen-1):
-                f.write(str(link_dict[au][rau][i][0])+' '+str(link_dict[au][rau][i][1])+'\t')
-            f.write(str(link_dict[au][rau][ylen-1][0])+' '+str(str(link_dict[au][rau][ylen-1][1]))+'\t'+'\n')
+                f.write(str(link_dict[au][rau][i][0])+' '+str(link_dict[au][rau][i][1])+' '+\
+                        str(link_dict[au][rau][i][2])+' '+str(link_dict[au][rau][i][3])+'\t')
+            f.write(str(link_dict[au][rau][ylen-1][0])+' '+str(link_dict[au][rau][ylen-1][1])+' '+\
+                    str(link_dict[au][rau][ylen-1][2])+' '+str(link_dict[au][rau][ylen-1][3])'\n')
     f.close()
     print ("export %s" % filename)
 
 export_link(auid_link_dict, 'data/test_title/%s' % conference)
 
 def export_title(au_title_dict, exdir):
-	if not os.path.exists(exdir):
-		os.makedirs(exdir)
-	filename = os.path.join(exdir, 'docs.txt')
-	f = open(filename, 'w')
-	for au in au_title_dict.keys():
-		for time, title in au_title_dict[au]:
-			f.write(au+'\t'+str(time)+'\t'+title+'\n')
-	print ("export %s" % filename)
-	
+    # format: auid \t paperid \t year \t title
+    if not os.path.exists(exdir):
+        os.makedirs(exdir)
+    filename = os.path.join(exdir, 'docs.txt')
+    f = open(filename, 'w')
+    for au in au_title_dict.keys():
+        for time, title in au_title_dict[au]:
+            f.write(au+'\t'+str(time)+'\t'+title+'\n')
+    print ("export %s" % filename)
+    f.close()
+
+def export_pid_title(pid_title_dict, exdir):
+    if not os.path.exists(exdir):
+        os.makedirs(exdir)
+    filename = os.path.join(exdir, 'pid_title.txt')
+    f = open(filename, "w")
+    for pid in pid_title_dict.keys():
+        f.write("%s\t%s\n" % (pid, pid_title_dict[pid]))
+    print ("export %s" % filename)
+    f.close()
+    
 export_title(au_time_title, 'data/test_title/%s' % conference)
+export_pid_title(p_time_title, 'data/test_title/%s' % conference)
 
 au_set = set()
 for au in auid_link_dict.keys():
