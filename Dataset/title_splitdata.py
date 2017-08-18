@@ -3,7 +3,7 @@ import json
 import random
 mode = 'test_title'
 conferences = [
-	'AAAI',
+	# 'AAAI',
 	# 'ACL',
 	'SIGCOMM',
 	# 'MIXED_100',
@@ -17,7 +17,7 @@ def load_edges(data_dir):
     re_edges = {}
     aus = set()
     edges_count = 0
-    for line in open(os.path.join(data_dir, 't_link.txt'), "r"):
+    for line in open(os.path.join(data_dir, 't_links.txt'), "r"):
         # line = [i for i in line.split() if i in predictor.uname2uid]
         # print(line)
         line = [i for i in line.split('\t')]
@@ -33,7 +33,7 @@ def load_edges(data_dir):
         	re_edges[ref_id] = {}
         if doc_id not in re_edges[ref_id].keys():
         	re_edges[ref_id][doc_id] = []
-        for tpl in line[2:-1]:
+        for tpl in line[2:]:
             tp = tpl.split(' ')
             edges[doc_id][ref_id].append((int(tp[0]), int(tp[1]), tp[2], tp[3]))
             re_edges[ref_id][doc_id].append((int(tp[0]), int(tp[1]), tp[3], tp[2]))
@@ -63,14 +63,14 @@ def export_link(filename, d):
 			f.write('\n')
 
 def export_sp_result(fdir, e, d_e):
-	d_e_filename = os.path.join(fdir, 'del_link.txt')
+	d_e_filename = os.path.join(fdir, 'del_links.txt')
 	export_link(d_e_filename, d_e)
-	e_filename = os.path.join(fdir, 'link.txt')
+	e_filename = os.path.join(fdir, 'links.txt')
 	export_link(e_filename, e)
 
-	t_d_e_filename = os.path.join(fdir, 't_del_link.txt')
+	t_d_e_filename = os.path.join(fdir, 't_del_links.txt')
 	export_t_link(t_d_e_filename, d_e)
-	t_e_filename = os.path.join(fdir, 't_link.txt')
+	t_e_filename = os.path.join(fdir, 't_links.txt')
 	export_t_link(t_e_filename, e)
 
 

@@ -10,24 +10,6 @@ import time
 import numpy as np
 
 
-# Output file:
-# ------------------------------------
-# link:         edges for training set
-# del_link:     edges for testing set
-#   Their Format：
-#   ori_auid \t ref_auid \t [ori_year ref_year \t]* \n
-# -----------------------------------
-# t_link:       edges for training set with title(pid)
-# del_t_link:   edges for testing set with title(pid)
-#   Their Format：
-#   ori_auid \t ref_auid \t [ori_year ref_year ori_pid ref_pid\t]* \n
-# -----------------------------------
-# fos_L*:       
-# ------------------------------------
-# c_fos_L*: 
-# ------------------------------------
-# 
-
 
 connection = pymysql.connect(host='127.0.0.1',
                              user='data',
@@ -45,10 +27,10 @@ def load_result(cursor, container, name):
     return container
 
 def load_results(cursor, containers, names):
-    for row in cursor.fetchall():
-        for container, name in zip(containers, names):
-            container.append(row[name])
-    return containers
+	for row in cursor.fetchall():
+		for container, name in zip(containers, names):
+			container.append(row[name])
+	return containers
 
 def export_fos(fos_dicts, exdir):
     if not os.path.exists(exdir):
@@ -124,13 +106,13 @@ for refp, orip in ref:
         if au not in auid_link_dict.keys():
             auid_link_dict[au] = {}
         if au not in au_time_title.keys():
-            au_time_title[au] = set()
+        	au_time_title[au] = set()
         au_time_title[au].add((oriyear[0], orititle[0]))
         for rau in refau:
             if rau not in auid_link_dict[au].keys():
                 auid_link_dict[au][rau] = []
             if rau not in au_time_title.keys():
-                au_time_title[rau] = set()
+            	au_time_title[rau] = set()
             auid_link_dict[au][rau].append((oriyear[0], refyear[0], orip, refp))
             au_time_title[rau].add((refyear[0], reftitle[0]))
             link_count += 1
@@ -140,7 +122,7 @@ print ("link count: %d" % link_count)
 def export_link(link_dict, exdir):    
     if not os.path.exists(exdir):
         os.makedirs(exdir)
-    filename = os.path.join(exdir, 'link.txt')
+    filename = os.path.join(exdir, 't_links.txt')
     gilename = os.path.join(exdir, 'links.txt')
     f = open(filename, 'w')
     g = open(gilename, 'w')
@@ -165,14 +147,14 @@ export_link(auid_link_dict, 'data/test_title/%s' % conference)
 
 def export_title(au_title_dict, exdir):
     # format: auid \t paperid \t year \t title
-    if not os.path.exists(exdir):
-        os.makedirs(exdir)
-    filename = os.path.join(exdir, 'docs.txt')
-    f = open(filename, 'w')
-    for au in au_title_dict.keys():
-        for time, title in au_title_dict[au]:
-            f.write(au+'\t'+str(time)+'\t'+title+'\n')
-    print ("export %s" % filename)
+	if not os.path.exists(exdir):
+		os.makedirs(exdir)
+	filename = os.path.join(exdir, 'docs.txt')
+	f = open(filename, 'w')
+	for au in au_title_dict.keys():
+		for time, title in au_title_dict[au]:
+			f.write(au+'\t'+str(time)+'\t'+title+'\n')
+	print ("export %s" % filename)
 
 def export_pid_title(pid_title_dict, exdir):
     if not os.path.exists(exdir):
@@ -183,7 +165,7 @@ def export_pid_title(pid_title_dict, exdir):
         f.write("%s\t%s\n" % (pid, pid_title_dict[pid]))
     print ("export %s" % filename)
     f.close()
-    
+	
 export_title(au_time_title, 'data/test_title/%s' % conference)
 export_pid_title(p_time_title, 'data/test_title/%s' % conference)
 
