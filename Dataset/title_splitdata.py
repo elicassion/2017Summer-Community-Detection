@@ -1,15 +1,15 @@
 import os
 import json
 import random
-mode = 'cite'
+mode = 'test_title'
 conferences = [
 	'AAAI',
-	'ACL',
+	# 'ACL',
 	'SIGCOMM',
-	'MIXED_100',
-	'MIXED_1203'
+	# 'MIXED_100',
+	# 'MIXED_1203'
 ]
-sp_mode = 's_' + mode
+sp_mode = 't_cite'
 
 
 def load_edges(data_dir):
@@ -17,7 +17,7 @@ def load_edges(data_dir):
     re_edges = {}
     aus = set()
     edges_count = 0
-    for line in open(os.path.join(data_dir, 'link.txt'), "r"):
+    for line in open(os.path.join(data_dir, 't_link.txt'), "r"):
         # line = [i for i in line.split() if i in predictor.uname2uid]
         # print(line)
         line = [i for i in line.split('\t')]
@@ -52,9 +52,9 @@ def export_link(filename, d):
 			f.write('\n')
 
 def export_sp_result(fdir, e, d_e):
-	d_e_filename = os.path.join(fdir, 'del_link.txt')
+	d_e_filename = os.path.join(fdir, 't_del_link.txt')
 	export_link(d_e_filename, d_e)
-	e_filename = os.path.join(fdir, 'link.txt')
+	e_filename = os.path.join(fdir, 't_link.txt')
 	export_link(e_filename, e)
 
 

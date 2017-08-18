@@ -1,15 +1,15 @@
 import os
 import json
 import random
-mode = 'cite'
+mode = 'test_title'
 conferences = [
 	'AAAI',
-	'ACL',
+	# 'ACL',
 	'SIGCOMM',
-	'MIXED_100',
-	'MIXED_1203'
+	# 'MIXED_100',
+	# 'MIXED_1203'
 ]
-sp_mode = 's_' + mode
+sp_mode = 't_cite' # t means title
 
 
 def load_edges(data_dir):
