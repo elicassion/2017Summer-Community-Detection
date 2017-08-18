@@ -40,7 +40,7 @@ def load_edges(data_dir):
             edges_count += 1
     return edges, re_edges, aus, edges_count
 
-def export_link(filename, d):
+def export_t_link(filename, d):
 	f = open(filename, "w")
 	for dau in d.keys():
 		for rau in d[dau].keys():
@@ -51,11 +51,27 @@ def export_link(filename, d):
 				f.write("%d %d %s %s\t" % (t1, t2, p1, p2))
 			f.write('\n')
 
+def export_link(filename, d):
+	f = open(filename, "w")
+	for dau in d.keys():
+		for rau in d[dau].keys():
+			if len(d[dau][rau]) == 0:
+				continue
+			f.write("%s\t%s\t" % (dau, rau))
+			for t1, t2, p1, p2 in d[dau][rau]:
+				f.write("%d %d\t" % (t1, t2))
+			f.write('\n')
+
 def export_sp_result(fdir, e, d_e):
-	d_e_filename = os.path.join(fdir, 't_del_link.txt')
+	d_e_filename = os.path.join(fdir, 'del_link.txt')
 	export_link(d_e_filename, d_e)
-	e_filename = os.path.join(fdir, 't_link.txt')
+	e_filename = os.path.join(fdir, 'link.txt')
 	export_link(e_filename, e)
+
+	t_d_e_filename = os.path.join(fdir, 't_del_link.txt')
+	export_t_link(t_d_e_filename, d_e)
+	e_filename = os.path.join(fdir, 't_link.txt')
+	export_t_link(t_e_filename, e)
 
 
 
