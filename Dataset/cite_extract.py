@@ -10,6 +10,24 @@ import time
 import numpy as np
 
 
+# Output file:
+# ------------------------------------
+# link:         edges for training set
+# del_link:     edges for testing set
+#   Their Format：
+#   ori_auid \t ref_auid \t [ori_year ref_year \t]* \n
+# -----------------------------------
+# t_link:       edges for training set with title(pid)
+# del_t_link:   edges for testing set with title(pid)
+#   Their Format：
+#   ori_auid \t ref_auid \t [ori_year ref_year ori_pid ref_pid\t]* \n
+# -----------------------------------
+# fos_L*:       
+# ------------------------------------
+# c_fos_L*: 
+# ------------------------------------
+# 
+
 
 connection = pymysql.connect(host='127.0.0.1',
                              user='data',
