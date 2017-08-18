@@ -70,7 +70,7 @@ def export_sp_result(fdir, e, d_e):
 
 	t_d_e_filename = os.path.join(fdir, 't_del_link.txt')
 	export_t_link(t_d_e_filename, d_e)
-	e_filename = os.path.join(fdir, 't_link.txt')
+	t_e_filename = os.path.join(fdir, 't_link.txt')
 	export_t_link(t_e_filename, e)
 
 
