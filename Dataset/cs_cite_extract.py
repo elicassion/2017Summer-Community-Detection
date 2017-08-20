@@ -18,11 +18,11 @@ connection = pymysql.connect(host='127.0.0.1',
                              cursorclass=pymysql.cursors.DictCursor)
 cursor = connection.cursor()
 
-conference_num = 100
+conference_num = 400
 Ctype = 'MIXED_%d' % conference_num
 random.seed(20170725)
 exdir = 'data/test_title/%s' % Ctype
-# conferenceIDs = []
+conferenceIDs = []
 
 # def load_cids(exdir):
 # 	cids = []
@@ -78,6 +78,9 @@ else:
 	
 	st_ref = time.time()
 	# for conferenceID in conferenceIDs:
+	cursor.execute("SELECT ConferenceSeriesID FROM ConferenceSeries WHERE UnderCS = 1 LIMIT %d" % conference_num)
+	for row in cursor.fetchall():
+		conferenceIDs.append(row['ConferenceSeriesID'])
 	cursor.execute("SELECT PaperID FROM Papers WHERE ConferenceSeriesIDMappedToVenueName IN (SELECT t.ConferenceSeriesID FROM (SELECT ConferenceSeriesID FROM ConferenceSeries WHERE UnderCS = 1 LIMIT %d) AS t)" % conference_num)
 	for row in cursor.fetchall():
 	    pid.append(row['PaperID'])
@@ -214,6 +217,7 @@ print ("author number: %d" % len(au_set))
 
 au_fos_all = [{}, {}, {}, {}]
 au_fos_count = [[],[],[],[]]
+st_exfos = time.time()
 for i in range(4):
     for au in au_set:
         cursor.execute("SELECT AuthorFOS.FieldOfStudyIDMappedToKeyword FROM AuthorFOS, FieldsOfStudy WHERE AuthorFOS.AuthorID = '%s' and FieldsOfStudy.FieldsOfStudyID = AuthorFOS.FieldOfStudyIDMappedToKeyword and FieldsOfStudy.FieldsOfStudyLevel = 'L%d' " % (au, i))
@@ -249,6 +253,9 @@ def export_fos(fos_dicts, exdir):
     for res in fos_set_len:
         resfile.write(str(res)+'\n')
     resfile.close()
+
+exfos_time = time.time() - st_exfos
+print ("extract fos time: %.3f" % exfos_time)
 
 export_fos(au_fos_all, exdir)
 
