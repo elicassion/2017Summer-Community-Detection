@@ -3,6 +3,7 @@ import os
 from math import log, exp
 from scipy.stats import norm
 from sklearn.preprocessing import MinMaxScaler
+import sys
 
 class predictor(object):
 
@@ -109,8 +110,11 @@ class predictor(object):
         if predict_mode == 'nlog':
             nlog = np.sum(self.f[from_user]*self.f[to_user]*\
                             norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])*\
-                            norm.pdf(t, self.mu[to_user], self.sigma[to_user]))
-            result = - log(1 - exp(-nlog))
+                            norm.pdf(to_time, self.mu[to_user], self.sigma[to_user]))
+            # print ('Nlog: ', nlog)
+            # if nlog < 1e-50:
+            #     return 1000
+            result = - log(1 - exp(-nlog) + sys.float_info.min)
             return result
         else:
             uvt1 = (from_user, to_user, from_time)
@@ -121,12 +125,12 @@ class predictor(object):
                 true_t2[item[0]] = item[1]
             predict_p = {}
             for t in range(1980, 2017):
-            result = 0
-            result = np.sum(self.f[from_user]*self.f[to_user]*\
-                            norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])*\
-                            norm.pdf(t, self.mu[to_user], self.sigma[to_user]))
-            result = 1 - exp(-result)
-            predict_p[t] = result
+                result = 0
+                result = np.sum(self.f[from_user]*self.f[to_user]*\
+                                norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])*\
+                                norm.pdf(t, self.mu[to_user], self.sigma[to_user]))
+                result = 1 - exp(-result)
+                predict_p[t] = result
             if predict_mode == 'map':
                 # st_p = sorted(predict_p.items(), key = lambda item:item[1], reverse = True)
                 p_keys = [item[0] for item in predict_p]

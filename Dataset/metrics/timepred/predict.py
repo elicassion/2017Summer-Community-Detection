@@ -20,19 +20,19 @@ if __name__ == '__main__':
     modes = [
       # 'cite', 
       # 'coau',
-      # 's_cite',
-      't_cite'
+      's_cite',
+      # 't_cite'
     ]
     conferences = [
-        'MIXED_200' 19 290 1601
-      # 'AAAI', # 19 287 1287 
-      # 'ACL', # 19 278 1204 
-      # 'SIGCOMM' # 19 265 1060 
+        # 'MIXED_200' # 19 290 1601
+        'AAAI', # 19 287 1287 
+        # 'ACL', # 19 278 1204 
+        # 'SIGCOMM' # 19 265 1060 
     ]
     versions = {
         'cdot': {
             'MIXED_200':[
-            ]
+            ],
             'AAAI':[ 
                 # ('CDOT2', 100),# ('CDOT3', 100),# ('CDOT8', 100),# ('CDOT_L0', 19),
                 # ('CDOT_L0_071923', 19),# ('CDOT_L0_ori', 19),# ('CDOT_L0_072317', 19),
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     expi = 'time_pred'
     root = os.path.abspath(os.path.join('..', '..'))
     result = pickle.load(open('result.pkl', 'rb')) if os.path.isfile('result.pkl') else []
-    data = {'model': [], 'cc': [], 'n': [], 'score': [], 'mode': [], 'conference': [], 'version':[], 'toleration':[]}
+    data = {'model': [], 'cc': [], 'n': [], 'score': [], 'mode': [], 'conference': [], 'version':[], 'toleration':[], 'predict_mode':[]}
     for model in models:
         for mode in modes:
             for conference in conferences:
@@ -108,7 +108,7 @@ if __name__ == '__main__':
         for k in data.keys():
             data[k].append(i[k])
     df = pd.DataFrame(data=data)
-    df = df.ix[df.groupby(['model', 'mode', 'conference', 'version', 'pred_mode'])['score'].idxmax().values, :].reset_index(drop=True)
+    df = df.ix[df.groupby(['model', 'mode', 'conference', 'version', 'predict_mode'])['score'].idxmax().values, :].reset_index(drop=True)
     out_filename = os.path.join(root, 'measure', expi, '{expi:s}_{date:s}.csv'.format(expi=expi, date=str(datetime.datetime.now()).replace(":", "-")))
     if not os.path.exists(os.path.dirname(out_filename)):
         os.makedirs(os.path.dirname(out_filename))
