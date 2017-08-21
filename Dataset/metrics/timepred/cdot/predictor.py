@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from math import exp
+from math import log, exp
 from scipy.stats import norm
 from sklearn.preprocessing import MinMaxScaler
 
@@ -15,7 +15,7 @@ class predictor(object):
     def load_data(self, data_dir):
         self.uname2uid = {}
         self.uvt1_rec = {}
-        for line in open(os.path.join(data_dir, 'link.txt')):
+        for line in open(os.path.join(data_dir, 'links.txt')):
             line = line.split('\t')
             if line[0] not in self.uname2uid:
                 self.uname2uid[line[0]] = len(self.uname2uid)
@@ -33,7 +33,7 @@ class predictor(object):
                 if t2 not in self.uvt1_rec[uvt1].keys():
                     self.uvt1_rec[uvt1][t2] = 0
                 self.uvt1_rec[uvt1][t2] += 1
-        for line in open(os.path.join(data_dir, 'del_link.txt')):
+        for line in open(os.path.join(data_dir, 'del_links.txt')):
             line = line.split('\t')
             doc_id = self.uname2uid[line[0]]
             ref_id = self.uname2uid[line[1]]
@@ -99,65 +99,65 @@ class predictor(object):
                 min_e_t2 = t2
         return min_e, min_e_t2
 
-    def time_predict(self, from_user, to_user, from_time, toleration, predict_mode):
+    def time_predict(self, from_user, to_user, from_time, to_time, predict_mode, toleration):
         # TODO: mode
         # map: no use of toleration
         # direct: use toleration to compare
         # maybe else~
 
-        uvt1 = (from_user, to_user, from_time)
-        true_t2 = self.uvt1_rec[uvt1]
-        true_t2_st = sorted(true_t2.items(), key = lambda item:item[1], reverse = True)
-        true_t2 = {}
-        for item in true_t2_st:
-            true_t2[item[0]] = item[1]
-        predict_p = {}
-        for t in range(1980, 2017):
+        
+        if predict_mode == 'nlog':
+            nlog = np.sum(self.f[from_user]*self.f[to_user]*\
+                            norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])*\
+                            norm.pdf(t, self.mu[to_user], self.sigma[to_user]))
+            result = - log(1 - exp(-nlog))
+            return result
+        else:
+            uvt1 = (from_user, to_user, from_time)
+            true_t2 = self.uvt1_rec[uvt1]
+            true_t2_st = sorted(true_t2.items(), key = lambda item:item[1], reverse = True)
+            true_t2 = {}
+            for item in true_t2_st:
+                true_t2[item[0]] = item[1]
+            predict_p = {}
+            for t in range(1980, 2017):
             result = 0
             result = np.sum(self.f[from_user]*self.f[to_user]*\
                             norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])*\
                             norm.pdf(t, self.mu[to_user], self.sigma[to_user]))
-            # for i in range(self.f.shape[1]):
-            #     result += self.f[from_user][i] * self.f[to_user][i] * \
-            #             norm.pdf(from_time, self.mu[from_user][i], self.sigma[from_user][i]) * \
-            #             norm.pdf(t, self.mu[to_user][i], self.sigma[to_user][i])
             result = 1 - exp(-result)
             predict_p[t] = result
-        # print ("predict_p:", predict_p)
-        if predict_mode is 'map':
-            # st_p = sorted(predict_p.items(), key = lambda item:item[1], reverse = True)
-            p_keys = [item[0] for item in predict_p]
-            p_values = [item[1] for item in predict_p]
-            # min max norm
-            mmnorm = MinMaxScaler()
-            p_values = mmnorm.fit_transform(np.array(p_values).reshape((-1,1))).reshape(37).tolist()
-            # print ("st_p:", st_p_keys)
-            # print (st_p_values)
-            # print (true_t2)
-            accumulate_p = 0
-            sum_freq = 0
-            for t2, freq in true_t2.items():
-                sum_freq += freq
-                accumulate_p += p_values[p_keys.index(t2)] * freq
-            accumulate_p = accumulate_p / sum_freq
-            return accumulate_p
-        elif predict_mode == 'topk':
-            st_p = sorted(predict_p.items(), key = lambda item:item[1], reverse = True)
-            st_p_keys = [item[0] for item in st_p]
-            st_p_values = [item[1] for item in st_p]
-            mmnorm = MinMaxScaler()
-            st_p_values = mmnorm.fit_transform(np.array(st_p_values).reshape((-1,1))).reshape(37).tolist()
-            result = 0
-            sum_freq = 0
-            for t2, freq in true_t2.items():
-                sum_freq += freq
-            used_true_t2 = set()
-            for i in range(len(true_t2)):
-                p_t2 = st_p_keys[i]
-                min_error, min_e_t2 = self.calc_min_error(p_t2, true_t2, used_true_t2, toleration)
-                # print (min_error, min_e_t2)
-                used_true_t2.add(min_e_t2)
-                if min_error <= toleration:
-                    result += 1 * true_t2[min_e_t2]
-            result = result / sum_freq
-            return result
+            if predict_mode == 'map':
+                # st_p = sorted(predict_p.items(), key = lambda item:item[1], reverse = True)
+                p_keys = [item[0] for item in predict_p]
+                p_values = [item[1] for item in predict_p]
+                # min max norm
+                mmnorm = MinMaxScaler()
+                p_values = mmnorm.fit_transform(np.array(p_values).reshape((-1,1))).reshape(37).tolist()
+                accumulate_p = 0
+                sum_freq = 0
+                for t2, freq in true_t2.items():
+                    sum_freq += freq
+                    accumulate_p += p_values[p_keys.index(t2)] * freq
+                accumulate_p = accumulate_p / sum_freq
+                return accumulate_p
+            if predict_mode == 'topk':
+                st_p = sorted(predict_p.items(), key = lambda item:item[1], reverse = True)
+                st_p_keys = [item[0] for item in st_p]
+                st_p_values = [item[1] for item in st_p]
+                mmnorm = MinMaxScaler()
+                st_p_values = mmnorm.fit_transform(np.array(st_p_values).reshape((-1,1))).reshape(37).tolist()
+                result = 0
+                sum_freq = 0
+                for t2, freq in true_t2.items():
+                    sum_freq += freq
+                used_true_t2 = set()
+                for i in range(len(true_t2)):
+                    p_t2 = st_p_keys[i]
+                    min_error, min_e_t2 = self.calc_min_error(p_t2, true_t2, used_true_t2, toleration)
+                    # print (min_error, min_e_t2)
+                    used_true_t2.add(min_e_t2)
+                    if min_error <= toleration:
+                        result += 1 * true_t2[min_e_t2]
+                result = result / sum_freq
+                return result

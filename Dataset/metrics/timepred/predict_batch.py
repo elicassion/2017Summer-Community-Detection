@@ -51,7 +51,7 @@ def mkdir_if_not_exists(path):
 def load_edges(data_dir, predictor):
     edges = set()
     # count = 0
-    for line in open(os.path.join(data_dir, 'link.txt')):
+    for line in open(os.path.join(data_dir, 'links.txt')):
         # line = [i for i in line.split() if i in predictor.uname2uid]
         # print(line)
         line = [i for i in line.split('\t')]
@@ -68,13 +68,13 @@ def load_edges(data_dir, predictor):
 
 def get_pos_edges(data_dir, predictor):
     edges = set()
-    for line in open(os.path.join(data_dir, 'del_link.txt')):
+    for line in open(os.path.join(data_dir, 'del_links.txt')):
         line = [i for i in line.split('\t')]
         doc_id = predictor.uname2uid[line[0]]
         ref_id = predictor.uname2uid[line[1]]
         for tpl in line[2:-1]:
             tp = tpl.split(' ')
-            edges.add((doc_id, ref_id, int(tp[0])))
+            edges.add((doc_id, ref_id, int(tp[0]), int(tp[1])))
     print ("Load Pos Edges Done. %d" % len(edges))
     return edges
 
@@ -85,8 +85,8 @@ def get_neg_edges(edges, predictor, max_uid, num):
         while True:
             from_user = random.randint(0, max_uid)
             to_user = random.randint(0, max_uid)
-            from_time = random.randint(1990, 2016)
-            to_time = random.randint(1990, 2016)
+            from_time = random.randint(1980, 2016)
+            to_time = random.randint(1980, 2016)
             # if isinstance(predictor, MAGICPredictor):
             #     if predictor.label[from_user][1] == predictor.label[to_user][1]:
             #         continue
@@ -111,16 +111,12 @@ def load_data(args):
     global edges
     edges = load_edges(data_dir, predictor)
     # ujson.dump(edges, open('edges.json', 'w'))
-    if args['mode'] == 's_cite':
+    if args['mode'] == 's_cite' or args['mode'] == 't_cite':
         pos_edges = get_pos_edges(data_dir, predictor)
     else:
         pos_edges = random.sample(edges, int(len(edges) * 0.1))
     neg_edges = get_neg_edges(edges, predictor, len(predictor.uname2uid) - 1, int(len(edges) * 0.1))
-<<<<<<< HEAD
     print(datetime.datetime.now(), 'Gen Edges Done.')
-=======
-    print(datetime.datetime.now(), 'load edges done')
->>>>>>> 46bfea0b7b6e47da39f19552720ec7bd3164ce59
     sys.stdout.flush()
     return pos_edges, neg_edges
 
@@ -140,18 +136,23 @@ def predict(args):
     }
     args['score_prefix'] = model2score_prefix[args['model']].format(**args)
     mkdir_if_not_exists(args['score_prefix'])
-    print ("added args: ", args)
+    print ("Added Args: ", args)
     # if not (os.path.exists(os.path.join(args['score_prefix'], args['n'] + '.pos.txt')) and os.path.exists(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))):
     tmp_filename = genearate_tmp_filename(ujson.dumps(args))
     ujson.dump(args, open(tmp_filename, 'w'))
-    print ("tempfilename", tmp_filename)
+    print ("Temp Filename", tmp_filename)
     subprocess.run('python predict_one.py %s' % tmp_filename, shell=True)
     os.remove(tmp_filename)
-    pos_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.pos.conf_%s.txt' % args['toleration']))]
-    # neg_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))]
-    # TODO: modify
-    accp = np.sum(pos_score) / len(pos_score)
-    print(datetime.datetime.now(), 'accp: ', accp)
+    if args['predict_mode'] == 'topk':
+        pos_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.pos.conf_%s.txt' % args['toleration']))]
+        # neg_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.neg.txt'))]
+        # TODO: modify
+        accp = np.sum(pos_score) / len(pos_score)
+        print(datetime.datetime.now(), 'Accp: ', accp)
+    elif args['predict_mode'] == 'nlog':
+        pos_score = [float(line) for line in open(os.path.join(args['score_prefix'], args['n'] + '.pos.nlog.txt'))]
+        accp = np.sum(pos_score) / len(pos_score)
+        print(datetime.datetime.now(), 'Average N-log: ', accp)
     sys.stdout.flush()
 
     args['score'] = accp
@@ -166,8 +167,12 @@ if __name__ == '__main__':
     conference = sys.argv[4]
     version = sys.argv[5]
     community_count = sys.argv[6]
-    toleration = sys.argv[7]
-    predict_mode = sys.argv[8]
+    predict_mode = sys.argv[7]
+    if predict_mode == 'topk':
+        toleration = sys.argv[8]
+    else:
+        toleration = 0.0
+    
 
     # community_count = [
     #     19,

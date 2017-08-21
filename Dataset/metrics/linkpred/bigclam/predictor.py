@@ -13,7 +13,7 @@ class predictor(object):
 
     def load_data(self, data_dir):
         self.uname2uid = {}
-        for line in open(os.path.join(data_dir, 'link.txt')):
+        for line in open(os.path.join(data_dir, 'links.txt')):
             line = line.split('\t')
             if line[0] not in self.uname2uid:
                 self.uname2uid[line[0]] = len(self.uname2uid)
