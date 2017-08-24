@@ -19,7 +19,7 @@ class predictor(object):
                 self.uname2uid[line[0]] = len(self.uname2uid)
             if line[1] not in self.uname2uid:
                 self.uname2uid[line[1]] = len(self.uname2uid)
-        print ("load data done.")
+        print ("Load Data Done.")
 
     def load_result(self, result_prefix, n, uname2uid, cc):
         # print (os.path.join(result_prefix, n + '.f_mu_sigma.txt'))
