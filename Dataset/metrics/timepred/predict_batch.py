@@ -14,7 +14,7 @@ from sklearn.metrics import roc_auc_score
 from bigclam.predictor import predictor as BIGCLAMPredictor
 from cdot.predictor import predictor as CDOTPredictor
 import numpy as np
-
+# time pred
 
 def genearate_tmp_filename(s):
     return ('tmp-' + str(hash(s)) + str(datetime.datetime.now()) + '.txt').replace(' ', '_').replace(':', '_')

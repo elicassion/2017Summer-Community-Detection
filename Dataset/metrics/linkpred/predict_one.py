@@ -12,7 +12,7 @@ from sklearn.metrics import roc_auc_score
 # sys.path.append(os.path.abspath('..'))
 from bigclam.predictor import predictor as BIGCLAMPredictor
 from cdot.predictor import predictor as CDOTPredictor
-
+# link pred
 
 def prdict_edges(predictor, edges, tag):
     scores = []

@@ -20,7 +20,7 @@ def prdict_edges(predictor, edges, tag, predict_mode, toleration):
     # for edge in random.sample(edges, num):
     for edge in edges:
         scores.append(predictor.time_predict(*edge, predict_mode, toleration))
-        if count % 1000 == 0:
+        if count % 100000 == 0:
             print(datetime.datetime.now(), tag, count, scores[-1])
             sys.stdout.flush()
         count += 1

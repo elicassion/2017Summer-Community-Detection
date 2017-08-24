@@ -13,7 +13,7 @@ from sklearn.metrics import roc_auc_score
 # sys.path.append(os.path.abspath('..'))
 from bigclam.predictor import predictor as BIGCLAMPredictor
 from cdot.predictor import predictor as CDOTPredictor
-
+# time pred
 
 def genearate_tmp_filename(s):
     return ('tmp-' + str(hash(s)) + str(datetime.datetime.now()) + '.txt').replace(' ', '_').replace(':', '_')
@@ -50,7 +50,7 @@ def mkdir_if_not_exists(path):
 def load_edges(data_dir, predictor):
     edges = set()
     # count = 0
-    for line in open(os.path.join(data_dir, 'link.txt')):
+    for line in open(os.path.join(data_dir, 'links.txt')):
         # line = [i for i in line.split() if i in predictor.uname2uid]
         # print(line)
         line = [i for i in line.split('\t')]
@@ -77,6 +77,19 @@ def prdict_edges(predictor, edges, tag):
             sys.stdout.flush()
         count += 1
     return scores
+
+def get_pos_edges(data_dir, predictor):
+    edges = set()
+    for line in open(os.path.join(data_dir, 'del_links.txt')):
+        line = [i for i in line.split('\t')]
+        doc_id = predictor.uname2uid[line[0]]
+        ref_id = predictor.uname2uid[line[1]]
+        for tpl in line[2:-1]:
+            tp = tpl.split(' ')
+            edges.add((doc_id, ref_id, int(tp[0]), int(tp[1])))
+    print ("Load Pos Edges Done. %d" % len(edges))
+    return edges
+
 
 
 def get_neg_edges(edges, predictor, max_uid, num):
@@ -111,7 +124,10 @@ def load_data(args):
     global edges
     edges = load_edges(data_dir, predictor)
     # ujson.dump(edges, open('edges.json', 'w'))
-    pos_edges = random.sample(edges, int(len(edges) * 0.1))
+    if args['mode'] == 's_cite' or args['mode'] == 't_cite':
+        pos_edges = get_pos_edges(data_dir, predictor)
+    else:
+        pos_edges = random.sample(edges, int(len(edges) * 0.1))
     neg_edges = get_neg_edges(edges, predictor, len(predictor.uname2uid) - 1, int(len(edges) * 0.1))
     print(datetime.datetime.now(), 'load edges done')
     sys.stdout.flush()
