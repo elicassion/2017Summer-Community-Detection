@@ -5,49 +5,30 @@ from scipy.stats import norm
 from sklearn.preprocessing import MinMaxScaler
 import sys
 
-class predictor(object):
+class Predictor(object):
 
-    def __init__(self):
+    def __init__(self, data_dir, result_dir):
         super(predictor, self).__init__()
         # self.data_dir = data_dir
         # self.result_prefix = result_prefix
         # self.load()
+        self.load_data(data_dir)
+        self.load_result(result_dir)
 
     def load_data(self, data_dir):
         self.uname2uid = {}
-        self.uvt1_rec = {}
         for line in open(os.path.join(data_dir, 'links.txt')):
-            line = line.split('\t')
+            line = line.strip().split('\t')
             if line[0] not in self.uname2uid:
                 self.uname2uid[line[0]] = len(self.uname2uid)
             if line[1] not in self.uname2uid:
                 self.uname2uid[line[1]] = len(self.uname2uid)
-            doc_id = self.uname2uid[line[0]]
-            ref_id = self.uname2uid[line[1]]
-            for tpl in line[2:-1]:
-                tp = tpl.split(' ')
-                t1 = int(tp[0])
-                t2 = int(tp[1])
-                uvt1 = (doc_id, ref_id, t1)
-                if uvt1 not in self.uvt1_rec.keys():
-                    self.uvt1_rec[uvt1] = {}
-                if t2 not in self.uvt1_rec[uvt1].keys():
-                    self.uvt1_rec[uvt1][t2] = 0
-                self.uvt1_rec[uvt1][t2] += 1
         for line in open(os.path.join(data_dir, 'del_links.txt')):
-            line = line.split('\t')
-            doc_id = self.uname2uid[line[0]]
-            ref_id = self.uname2uid[line[1]]
-            for tpl in line[2:-1]:
-                tp = tpl.split(' ')
-                t1 = int(tp[0])
-                t2 = int(tp[1])
-                uvt1 = (doc_id, ref_id, t1)
-                if uvt1 not in self.uvt1_rec.keys():
-                    self.uvt1_rec[uvt1] = {}
-                if t2 not in self.uvt1_rec[uvt1].keys():
-                    self.uvt1_rec[uvt1][t2] = 0
-                self.uvt1_rec[uvt1][t2] += 1
+            line = line.strip().split('\t')
+            if line[0] not in self.uname2uid:
+                self.uname2uid[line[0]] = len(self.uname2uid)
+            if line[1] not in self.uname2uid:
+                self.uname2uid[line[1]] = len(self.uname2uid)
         print ("load data done.")
 
     def load_result(self, result_prefix, n, uname2uid, cc):
@@ -165,3 +146,7 @@ class predictor(object):
                         result += 1 * true_t2[min_e_t2]
                 result = result / sum_freq
                 return result
+
+data_dir = os.path.join('..', 'data', 't_cite', 'AAAI')
+result_dir = os.path.join('res', 'AAAI')
+predictor = Predictor(data_dir, result_dir, 287)
