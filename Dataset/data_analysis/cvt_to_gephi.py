@@ -2,6 +2,7 @@ import os
 import sys
 import codecs
 data_dir = os.path.join('..', 'data', 't_cite', 'AAAI')
+res_dir = os.path.join('..', 'res', '')
 exnid_uid_filename = os.path.join(data_dir, 'nid_uid.csv')
 exlink_filename = os.path.join(data_dir, 'nid_links.csv')
 exlink_time_filename = os.path.join(data_dir, 'nid_time_links.csv')
