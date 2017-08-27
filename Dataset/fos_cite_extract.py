@@ -246,7 +246,7 @@ for au in au_set:
     fos = []
     for row in cursor.fetchall():
     	if row['FieldOfStudyIDMappedToKeyword'] in sonFos:
-        	fos.append(row[name])
+        	fos.append(row['FieldOfStudyIDMappedToKeyword'])
     au_fos_all[au] = fos
     au_fos_count.append(len(fos))
 
@@ -270,7 +270,7 @@ def com_export_fos(fos_au_dicts, exdir):
     f = open(filename, 'w')
     for fos in fos_au_dicts.keys():
         setlen = len(fos_au_dicts[fos])
-        if  setlen == 0:
+        if setlen == 0:
             f.write(fos+'\n')
             continue
         f.write(fos+'\t')
