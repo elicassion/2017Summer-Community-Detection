@@ -10,6 +10,7 @@ from lxml import etree
 import json
 import time
 import numpy as np
+import sys
 
 
 
@@ -21,6 +22,33 @@ connection = pymysql.connect(host='127.0.0.1',
                              port=3306,
                              cursorclass=pymysql.cursors.DictCursor)
 cursor = connection.cursor()
+
+class ProgressBar:
+	def __init__(self, name = '', total = 0, width = 20):
+		self.total = total
+		self.width = width
+		self.count = 0
+		self.name = name
+		self.start_time = 0
+
+	def start(self):
+		self.start_time = time.time()
+
+	def move(self):
+		self.count += 1
+		self.showProgress()
+
+	def showProgress(self):
+		progress = self.width * self.count / self.total
+		elapsed = time.time() - self.start_time
+		eta = elapsed * (self.total / self.count - 1)
+		sys.stdout.write('%s: [%d/%d] ' % (self.name, self.count, self.total))
+		sys.stdout.write('[' + '=' * round(progress) + '>' + '-' * round(self.width - progress) + '] ')
+		sys.stdout.write('Elapsed: %ds/ETA: %ds\r' % (round(elapsed), round(eta)))
+		if progress == self.width:
+			sys.stdout.write('\n')
+		sys.stdout.flush()
+
 
 
 def load_result(cursor, container, name):
@@ -81,18 +109,33 @@ cursor.execute("SELECT PaperID FROM PaperRefKeywords WHERE FieldOfStudyIDMappedT
 pid = set()
 for row in cursor.fetchall():
     pid.add(row['PaperID'])
-print (len(pid))
+print ("Paper Num: %d" % len(pid))
 
-st_ref = time.time()
-cursor.execute("SELECT PaperID, PaperReferenceID FROM PaperReferences WHERE PaperID IN (SELECT PaperID FROM PaperRefKeywords WHERE FieldOfStudyIDMappedToKeyword = '%s') AND PaperReferenceID IN (SELECT PaperID FROM PaperRefKeywords WHERE FieldOfStudyIDMappedToKeyword = '%s')" % (FosID, FosID))
-ref_res = cursor.fetchall()
-print ("Searching Time: %.3f" % (time.time() - st_ref))
-print (len(ref_res))
 
 ref = set()
-for row in ref_res:
-    ref.add((row['PaperID'], row['PaperReferenceID']))
+st_ref = time.time()
+# cursor.execute("SELECT PaperID, PaperReferenceID FROM PaperReferences WHERE PaperID IN (SELECT PaperID FROM PaperRefKeywords WHERE FieldOfStudyIDMappedToKeyword = '%s') AND PaperReferenceID IN (SELECT PaperID FROM PaperRefKeywords WHERE FieldOfStudyIDMappedToKeyword = '%s')" % (FosID, FosID))
+search_pbar = ProgressBar(name="Searching Ref", total=len(pid))
+search_pbar.start()
+for paperid in pid:
+	# st_sg = time.time()
+	cursor.execute("SELECT PaperID, PaperReferenceID FROM PaperReferences WHERE PaperID='%s'" % paperid)
+	ref_res = cursor.fetchall()
+	for row in ref_res:
+		if row['PaperReferenceID'] not in pid:
+			continue
+		ref.add((row['PaperID'], row['PaperReferenceID']))
 
+	cursor.execute("SELECT PaperID, PaperReferenceID FROM PaperReferences WHERE PaperReferenceID='%s'" % paperid)
+	ref_res = cursor.fetchall()
+	for row in ref_res:
+		if row['PaperID'] not in pid:
+			continue
+		ref.add((row['PaperID'], row['PaperReferenceID']))
+	search_pbar.move()
+	
+print ("Searching All Time: %.3f" % (time.time() - st_ref))
+print (len(ref_res))
 
 auid_link_dict = {}
 # add title
@@ -199,11 +242,11 @@ print ("Author number: %d" % len(au_set))
 au_fos_all = {}
 au_fos_count = []
 for au in au_set:
-    cursor.execute("SELECT AuthorFOS.FieldOfStudyIDMappedToKeyword FROM AuthorFOS, FieldsOfStudy WHERE AuthorFOS.AuthorID = '%s' and FieldsOfStudy.FieldsOfStudyID = AuthorFOS.FieldOfStudyIDMappedToKeyword and FieldsOfStudy.FieldsOfStudyLevel = 'L%d' " % (au, i))
+    cursor.execute("SELECT AuthorFOS.FieldOfStudyIDMappedToKeyword FROM AuthorFOS, FieldsOfStudy WHERE AuthorFOS.AuthorID = '%s' and FieldsOfStudy.FieldsOfStudyID = AuthorFOS.FieldOfStudyIDMappedToKeyword and FieldsOfStudy.FieldsOfStudyLevel = 'L3' ")
     fos = []
     for row in cursor.fetchall():
     	if row['FieldOfStudyIDMappedToKeyword'] in sonFos:
-        	fos.append(row[name])
+        	fos.append(row['FieldOfStudyIDMappedToKeyword'])
     au_fos_all[au] = fos
     au_fos_count.append(len(fos))
 
@@ -227,7 +270,7 @@ def com_export_fos(fos_au_dicts, exdir):
     f = open(filename, 'w')
     for fos in fos_au_dicts.keys():
         setlen = len(fos_au_dicts[fos])
-        if  setlen == 0:
+        if setlen == 0:
             f.write(fos+'\n')
             continue
         f.write(fos+'\t')
