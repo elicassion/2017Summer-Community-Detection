@@ -16,6 +16,8 @@ class predictor(object):
     def load_data(self, data_dir):
         self.uname2uid = {}
         self.uvt1_rec = {}
+        self.min_time = 9999
+        self.max_time = 0
         for line in open(os.path.join(data_dir, 'links.txt')):
             line = line.split('\t')
             if line[0] not in self.uname2uid:
@@ -28,6 +30,10 @@ class predictor(object):
                 tp = tpl.split(' ')
                 t1 = int(tp[0])
                 t2 = int(tp[1])
+                self.min_time = min(self.min_time, t1)
+                self.min_time = min(self.min_time, t2)
+                self.max_time = max(self.max_time, t1)
+                self.max_time = max(self.max_time, t2)
                 uvt1 = (doc_id, ref_id, t1)
                 if uvt1 not in self.uvt1_rec.keys():
                     self.uvt1_rec[uvt1] = {}
@@ -42,6 +48,10 @@ class predictor(object):
                 tp = tpl.split(' ')
                 t1 = int(tp[0])
                 t2 = int(tp[1])
+                self.min_time = min(self.min_time, t1)
+                self.min_time = min(self.min_time, t2)
+                self.max_time = max(self.max_time, t1)
+                self.max_time = max(self.max_time, t2)
                 uvt1 = (doc_id, ref_id, t1)
                 if uvt1 not in self.uvt1_rec.keys():
                     self.uvt1_rec[uvt1] = {}
@@ -86,7 +96,7 @@ class predictor(object):
 
 
     def calc_error(self, x, y):
-        return abs(x-y)/(2016-1980)
+        return abs(x-y)/(self.max_time-self.min_time)
 
     def calc_min_error(self, p_t2, true_t2, used_true_t2, toleration):
         min_e = 99999
@@ -105,15 +115,17 @@ class predictor(object):
         # map: no use of toleration
         # direct: use toleration to compare
         # maybe else~
-
-        
         if predict_mode == 'nlog':
-            nlog = np.sum(self.f[from_user]*self.f[to_user]*\
+            p_values = [0 for i in range(self.min_time, self.max_time+1)]
+            for t in range(self.min_time, self.max_time+1):
+                p_values[t-self.min_time] = np.sum(self.f[from_user]*self.f[to_user]*\
                             norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])*\
-                            norm.pdf(to_time, self.mu[to_user], self.sigma[to_user]))
+                            norm.pdf(t, self.mu[to_user], self.sigma[to_user]))
             # print ('Nlog: ', nlog)
             # if nlog < 1e-50:
             #     return 1000
+            st_p_values = mmnorm.fit_transform(np.array(p_values).reshape((-1,1))).reshape(self.max_time-self.min_time)
+            nlog = st_p_values[to_time-self.min_time]
             result = - log(1 - exp(-nlog) + sys.float_info.min)
             return result
         else:
