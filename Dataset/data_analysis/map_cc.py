@@ -11,8 +11,8 @@ connection = pymysql.connect(host='127.0.0.1',
                              cursorclass=pymysql.cursors.DictCursor)
 cursor = connection.cursor()
 
-data_dir = os.path.join('..', 'data', 't_cite', 'AAAI')
-cc_lv = 'L1'
+data_dir = os.path.join('..', 'data', 'test_fos', 'big_data')
+cc_lv = 'L3'
 cfile = open(os.path.join(data_dir, 'c_fos_%s.txt' % cc_lv), 'r')
 cid_dict = {}
 if not os.path.exists(os.path.join(data_dir, 'fos_id_name_%s.txt' % cc_lv)):
