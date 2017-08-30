@@ -6,17 +6,26 @@ from scipy.stats import norm
 from sklearn.preprocessing import MinMaxScaler
 import sys
 
+def potionScaler(l):
+    return l / np.sum(l)
+
+
 class Predictor(object):
 
-    def __init__(self, data_dir, result_dir, cc):
-        super(predictor, self).__init__()
+    def __init__(self, data_dir, result_dir, vis_dir, cc):
+        super(Predictor, self).__init__()
         self.data_dir = data_dir
         self.result_dir = result_dir
+        self.vis_dir = vis_dir
         self.cc = cc
-        self.load_data(data_dir)
-        self.load_result(result_dir)
         self.uname2uid = {}
         self.links = set()
+        self.min_time = 99999
+        self.max_time = 0
+        self.load_data(data_dir)
+        self.load_result(result_dir)
+        
+        
 
 
     def load_data(self, data_dir):
@@ -27,12 +36,14 @@ class Predictor(object):
                 self.uname2uid[line[0]] = len(self.uname2uid)
             if line[1] not in self.uname2uid:
                 self.uname2uid[line[1]] = len(self.uname2uid)
-        # for line in open(os.path.join(data_dir, 'del_links.txt')):
-        #     line = line.strip().split('\t')
-        #     if line[0] not in self.uname2uid:
-        #         self.uname2uid[line[0]] = len(self.uname2uid)
-        #     if line[1] not in self.uname2uid:
-        #         self.uname2uid[line[1]] = len(self.uname2uid)
+            for tpl in line[2:]:
+                tp = tpl.split(' ')
+                t1 = int(tp[0])
+                t2 = int(tp[1])
+                self.min_time = min(self.min_time, t1)
+                self.min_time = min(self.min_time, t2)
+                self.max_time = max(self.max_time, t1)
+                self.max_time = max(self.max_time, t2)
         print ("Load Data Done.")
 
     def load_result(self, result_dir):
@@ -79,63 +90,60 @@ class Predictor(object):
             #     return 1000
             result = - log(1 - exp(-nlog) + sys.float_info.min)
             return result
-        else:
-            uvt1 = (from_user, to_user, from_time)
-            true_t2 = self.uvt1_rec[uvt1]
-            true_t2_st = sorted(true_t2.items(), key = lambda item:item[1], reverse = True)
-            true_t2 = {}
-            for item in true_t2_st:
-                true_t2[item[0]] = item[1]
-            predict_p = {}
-            for t in range(1980, 2017):
-                result = 0
-                result = np.sum(self.f[from_user]*self.f[to_user]*\
-                                norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])*\
-                                norm.pdf(t, self.mu[to_user], self.sigma[to_user]))
-                result = 1 - exp(-result)
-                predict_p[t] = result
-            if predict_mode == 'map':
-                # st_p = sorted(predict_p.items(), key = lambda item:item[1], reverse = True)
-                p_keys = [item[0] for item in predict_p]
-                p_values = [item[1] for item in predict_p]
-                # min max norm
-                mmnorm = MinMaxScaler()
-                p_values = mmnorm.fit_transform(np.array(p_values).reshape((-1,1))).reshape(37).tolist()
-                accumulate_p = 0
-                sum_freq = 0
-                for t2, freq in true_t2.items():
-                    sum_freq += freq
-                    accumulate_p += p_values[p_keys.index(t2)] * freq
-                accumulate_p = accumulate_p / sum_freq
-                return accumulate_p
-            if predict_mode == 'topk':
-                st_p = sorted(predict_p.items(), key = lambda item:item[1], reverse = True)
-                st_p_keys = [item[0] for item in st_p]
-                st_p_values = [item[1] for item in st_p]
-                mmnorm = MinMaxScaler()
-                st_p_values = mmnorm.fit_transform(np.array(st_p_values).reshape((-1,1))).reshape(37).tolist()
-                result = 0
-                sum_freq = 0
-                for t2, freq in true_t2.items():
-                    sum_freq += freq
-                used_true_t2 = set()
-                for i in range(len(true_t2)):
-                    p_t2 = st_p_keys[i]
-                    min_error, min_e_t2 = self.calc_min_error(p_t2, true_t2, used_true_t2, toleration)
-                    # print (min_error, min_e_t2)
-                    used_true_t2.add(min_e_t2)
-                    if min_error <= toleration:
-                        result += 1 * true_t2[min_e_t2]
-                result = result / sum_freq
-                return result
+        
 
     def show_distribute(self, uname):
-        uid = uname2uid[uname]
+        uid = self.uname2uid[uname]
+        res_para_file = open(os.path.join(self.vis_dir, "%s_para.txt" % uname), "w")
         print (self.f[uid])
         print (self.mu[uid])
         print (self.sigma[uid])
+        f = self.f[uid]
+        mu = self.mu[uid]
+        sigma = self.sigma[uid]
+        for i in f:
+            res_para_file.write("%.18e\t" % i)
+        res_para_file.write('\n')
+        for i in mu:
+            res_para_file.write("%.18e\t" % i)
+        res_para_file.write('\n')
+        for i in sigma:
+            res_para_file.write("%.18e\t" % i)
+        res_para_file.close()
+
+        dis_file_name = os.path.join(self.vis_dir, "%s_vis.csv" % uname)
+        portions = []
+        for t in range(1955, 2017):
+            p_values = f*norm.pdf(t, mu, sigma)
+            st_p_values = potionScaler(p_values).tolist()
+            portions.append(st_p_values)
+        portions = np.array(portions)
+        np.savetxt(dis_file_name, portions, fmt='%.7f', delimiter=',')
+
+    def find_nice(self, scope):
+        lt = scope[0]
+        rt = scope[1]
+        nice_list = []
+        for uname in self.uname2uid.keys():
+            uid = self.uname2uid[uname]
+            count = 0
+            mu = self.mu[uid]
+            for i in mu:
+                if i > lt and i < lt and abs(i-2008) > 0.5:
+                    count += 1
+            if count >= 2:
+                nice_list.append(uname)
+        nice_file = open(os.path.join(self.vis_dir, "nice.txt"), "w")
+        for i in nice_list:
+            nice_file.write("%s\n")
+        print ("Nice Person Count: %d" % len(nice_list))
+
+
+
 
 data_dir = os.path.join('..', 'data', 'test_fos', 'big_data')
 result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', 'big_data', 'bd_082800')
-predictor = Predictor(data_dir, result_dir, 34)
-distribute = predictor.show_distribute('61F1FBBD')
+vis_dir = os.path.join('res', 'big_data')
+predictor = Predictor(data_dir, result_dir, vis_dir, 34)
+# distribute = predictor.show_distribute('8039481B')
+predictor.find_nice((1955, 2017))
