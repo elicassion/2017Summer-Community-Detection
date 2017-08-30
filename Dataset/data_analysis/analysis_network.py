@@ -5,7 +5,7 @@ data_dir = os.path.join('..', 'data', 'test_fos', 'big_data')
 lf = open(os.path.join(data_dir, 'links.txt'))
 count = 0
 uname2uid = {}
-linkyear = set()
+linkyear = {}
 for line in lf:
 	line = line.strip()
 	tps = line.split('\t')
@@ -18,8 +18,8 @@ for line in lf:
 		tp = tpl.split(' ')
 		t1 = int(tp[0])
 		t2 = int(tp[1])
-		linkyear.add(t1)
-		linkyear.add(t2)
+		linkyear[t1] = linkyear.get(t1, 0) + 1
+		linkyear[t2] = linkyear.get(t2, 0) + 1
 print ("Link Num: %d" % count)
 # print (uname2uid['61F1FBBD'])
 print (linkyear)

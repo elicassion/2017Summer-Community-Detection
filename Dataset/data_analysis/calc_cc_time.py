@@ -95,9 +95,9 @@ class Predictor(object):
     def show_distribute(self, uname):
         uid = self.uname2uid[uname]
         res_para_file = open(os.path.join(self.vis_dir, "%s_para.txt" % uname), "w")
-        print (self.f[uid])
-        print (self.mu[uid])
-        print (self.sigma[uid])
+        # print (self.f[uid])
+        # print (self.mu[uid])
+        # print (self.sigma[uid])
         f = self.f[uid]
         mu = self.mu[uid]
         sigma = self.sigma[uid]
@@ -113,14 +113,24 @@ class Predictor(object):
 
         dis_file_name = os.path.join(self.vis_dir, "%s_vis.csv" % uname)
         portions = []
+        s_portions = []
         for t in range(1955, 2017):
             p_values = f*norm.pdf(t, mu, sigma)
             st_p_values = potionScaler(p_values).tolist()
             portions.append(st_p_values)
+            s_portions.append(np.sum(p_values))
+        mmnorm = MinMaxScaler()
+        # print (s_portions)
+        st_sp = mmnorm.fit_transform(np.array(s_portions).reshape((-1,1))).reshape(62)
+        # print (st_sp)
         portions = np.array(portions)
+        for i in range(34):
+            portions[i] *= st_sp[i]
+        # print (portions)
         np.savetxt(dis_file_name, portions, fmt='%.7f', delimiter=',')
 
     def find_nice(self, scope):
+        th = 4
         lt = scope[0]
         rt = scope[1]
         nice_list = []
@@ -129,13 +139,13 @@ class Predictor(object):
             count = 0
             mu = self.mu[uid]
             for i in mu:
-                if i > lt and i < lt and abs(i-2008) > 0.5:
+                if i > lt and i < rt and abs(i-2008) > 0.5:
                     count += 1
-            if count >= 2:
+            if count >= th:
                 nice_list.append(uname)
-        nice_file = open(os.path.join(self.vis_dir, "nice.txt"), "w")
+        nice_file = open(os.path.join(self.vis_dir, "nice_%d.txt" % th), "w")
         for i in nice_list:
-            nice_file.write("%s\n")
+            nice_file.write("%s\n" % i)
         print ("Nice Person Count: %d" % len(nice_list))
 
 
@@ -145,5 +155,7 @@ data_dir = os.path.join('..', 'data', 'test_fos', 'big_data')
 result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', 'big_data', 'bd_082800')
 vis_dir = os.path.join('res', 'big_data')
 predictor = Predictor(data_dir, result_dir, vis_dir, 34)
-# distribute = predictor.show_distribute('8039481B')
-predictor.find_nice((1955, 2017))
+distribute = predictor.show_distribute('8039481B')
+# distribute = predictor.show_distribute('80006CCF')
+# distribute = predictor.show_distribute('077D8DEE')
+# predictor.find_nice((1955, 2017))
