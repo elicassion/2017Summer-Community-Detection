@@ -16,8 +16,8 @@ class predictor(object):
     def load_data(self, data_dir):
         self.uname2uid = {}
         self.uvt1_rec = {}
-        self.min_time = 9999
-        self.max_time = 0
+        self.min_time = 1955
+        self.max_time = 2016
         for line in open(os.path.join(data_dir, 'links.txt')):
             line = line.split('\t')
             if line[0] not in self.uname2uid:
@@ -30,10 +30,10 @@ class predictor(object):
                 tp = tpl.split(' ')
                 t1 = int(tp[0])
                 t2 = int(tp[1])
-                self.min_time = min(self.min_time, t1)
-                self.min_time = min(self.min_time, t2)
-                self.max_time = max(self.max_time, t1)
-                self.max_time = max(self.max_time, t2)
+                # self.min_time = min(self.min_time, t1)
+                # self.min_time = min(self.min_time, t2)
+                # self.max_time = max(self.max_time, t1)
+                # self.max_time = max(self.max_time, t2)
                 uvt1 = (doc_id, ref_id, t1)
                 if uvt1 not in self.uvt1_rec.keys():
                     self.uvt1_rec[uvt1] = {}
@@ -48,17 +48,19 @@ class predictor(object):
                 tp = tpl.split(' ')
                 t1 = int(tp[0])
                 t2 = int(tp[1])
-                self.min_time = min(self.min_time, t1)
-                self.min_time = min(self.min_time, t2)
-                self.max_time = max(self.max_time, t1)
-                self.max_time = max(self.max_time, t2)
+                # self.min_time = min(self.min_time, t1)
+                # self.min_time = min(self.min_time, t2)
+                # self.max_time = max(self.max_time, t1)
+                # self.max_time = max(self.max_time, t2)
                 uvt1 = (doc_id, ref_id, t1)
                 if uvt1 not in self.uvt1_rec.keys():
                     self.uvt1_rec[uvt1] = {}
                 if t2 not in self.uvt1_rec[uvt1].keys():
                     self.uvt1_rec[uvt1][t2] = 0
                 self.uvt1_rec[uvt1][t2] += 1
-        print ("load data done.")
+        print ("Load Data Done.")
+        print ("Min Time: %d" % self.min_time)
+        print ("Max Time: %d" % self.max_time)
 
     def load_result(self, result_prefix, n, uname2uid, cc):
         # print (os.path.join(result_prefix, n + '.f_mu_sigma.txt'))
@@ -116,17 +118,18 @@ class predictor(object):
         # direct: use toleration to compare
         # maybe else~
         if predict_mode == 'nlog':
-            p_values = [0 for i in range(self.min_time, self.max_time+1)]
-            for t in range(self.min_time, self.max_time+1):
+            p_values = [0 for i in range(1955, 2017)]
+            for t in range(1955, 2017):
                 p_values[t-self.min_time] = np.sum(self.f[from_user]*self.f[to_user]*\
                             norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])*\
                             norm.pdf(t, self.mu[to_user], self.sigma[to_user]))
-            # print ('Nlog: ', nlog)
-            # if nlog < 1e-50:
-            #     return 1000
-            st_p_values = mmnorm.fit_transform(np.array(p_values).reshape((-1,1))).reshape(self.max_time-self.min_time)
-            nlog = st_p_values[to_time-self.min_time]
-            result = - log(1 - exp(-nlog) + sys.float_info.min)
+            p_values = np.array(p_values)
+            # st_p_values = p_values / (np.sum(p_values) + sys.float_info.min)
+            mmnorm = MinMaxScaler()
+            st_p_values = mmnorm.fit_transform(np.array(p_values).reshape((-1,1))).reshape(62).tolist()
+            nlog = st_p_values[to_time-1955]
+            result = - log(nlog + sys.float_info.min)
+            # result = - log(1 - exp(-nlog) + sys.float_info.min)
             return result
         else:
             uvt1 = (from_user, to_user, from_time)
@@ -136,7 +139,7 @@ class predictor(object):
             for item in true_t2_st:
                 true_t2[item[0]] = item[1]
             predict_p = {}
-            for t in range(1980, 2017):
+            for t in range(self.min_time, self.max_time+1):
                 result = 0
                 result = np.sum(self.f[from_user]*self.f[to_user]*\
                                 norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])*\

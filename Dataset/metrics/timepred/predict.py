@@ -21,15 +21,15 @@ if __name__ == '__main__':
       # 'cite', 
       # 'coau',
       # 's_cite',
-      # 't_cite'
-      'test_fos'
+      't_cite'
+      # 'test_fos'
     ]
     conferences = [
-        'big_data' # 34
+        # 'big_data' # 34
       # 'AAAI', # 19 287 1287 
       # 'ACL', # 19 278 1204 
       # 'SIGCOMM', # 19 265 1060 
-      # 'MIXED_200' # 19 290 1601
+      'MIXED_200' # 19 290 1601
     ]
     versions = {
         'cdot': {
@@ -37,7 +37,8 @@ if __name__ == '__main__':
                 ('bd_082800', 34)
             ],
             'MIXED_200':[
-                ('CDOT_L0_082410', 19)
+                # ('CDOT_L0_082410', 19),
+                ('CDOT_L1_082920', 290)
             ],
             'AAAI':[ 
                 # ('CDOT2', 100),# ('CDOT3', 100),# ('CDOT8', 100),# ('CDOT_L0', 19),
