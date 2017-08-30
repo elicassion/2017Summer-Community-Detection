@@ -169,6 +169,8 @@ def prdict(args):
     auc_fp = open(args['score_prefix'] + '.auc.txt', 'w')
     auc_fp.write(str(auc))
     auc_fp.close()
+    args['score'] = auc
+    return args
 
 
 if __name__ == '__main__':
@@ -181,7 +183,8 @@ if __name__ == '__main__':
         # 'PMTLM',
     ]
     datasets = [
-        'AAAI',
+        'MIXED_200', # 19 290
+        # 'AAAI',
         # 'SIGCOMM'
         # 'dblp_citation',
         # 'dblp_coauthor',
@@ -189,8 +192,9 @@ if __name__ == '__main__':
     ]
     community_count = [
         19,
+        290,
         # 265,
-        287,
+        # 287,
         # 10,
         # 50,
         # 100,

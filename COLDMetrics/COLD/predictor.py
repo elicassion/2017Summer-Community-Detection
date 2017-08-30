@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from scipy.stats import beta
-
+from sklearn.preprocessing import MinMaxScaler
 
 class predictor(object):
 
@@ -82,7 +82,7 @@ class predictor(object):
     def time_predict(self, predict_mode, adoc):
         # a doc: text, uid, time
         doc = adoc[0]
-        uid = adoc[1]
+        user = adoc[1]
         time = adoc[2]
         pw = np.ones(self.K, dtype=float)
         doc = doc.split()
@@ -90,8 +90,14 @@ class predictor(object):
             if word in self.word2wid:
                 pw *= self.phi[:, self.word2wid[word]]
         pt = np.dot(np.dot(self.ptkc, self.pi[user]), pw)
+        l = len(pt)
         if predict_mode == 'nlog':
-            return pt[time]
+            pt[~np.isfinite(pt)] = 0
+            # print (pt)
+            mmnorm = MinMaxScaler()
+            st_p_values = mmnorm.fit_transform(np.array(pt).reshape((-1,1))).reshape(101)
+            return st_p_values[self.t.index(time)]
+            # return pt[round(time)]
         elif predict_mode == 'top':
             pt[~np.isfinite(pt)] = 0
             return self.t[np.argmax(pt)]

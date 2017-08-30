@@ -5,6 +5,7 @@ import random
 import gc
 import datetime
 import ujson
+import math
 from multiprocessing.pool import Pool
 import pickle
 sys.path.append(os.path.abspath('..'))
@@ -13,6 +14,7 @@ from COLD.predictor import predictor as COLDPredictor
 from CTCD.ber_predictor import predictor as CTCDBerPredictor
 from CTCD.poi_predictor import predictor as CTCDPoiPredictor
 import numpy as np
+
 
 
 def mkdir_if_not_exists(path):
@@ -45,8 +47,8 @@ def predict_time(predictor, pred_mode, docs, num):
     likelihoods = []
     # for doc in random.sample(docs, num):
     for doc in docs:
-        if count % 100000 == 0:
-            print(datetime.datetime.now(), 'doc: ', count)
+        if (count+1) % 10000 == 0:
+            print(datetime.datetime.now(), 'Doc: ', count)
             sys.stdout.flush()
         count += 1
         # a doc: text, uid, time
@@ -55,8 +57,12 @@ def predict_time(predictor, pred_mode, docs, num):
             real_times.append(doc[2])
             pred_times.append(time)
             return real_times, pred_times
-        elif predict_mode == 'nlog':
+        elif pred_mode == 'nlog':
             likelihood = predictor.time_predict(pred_mode, doc)
+            # print ('likelihood', likelihood)
+            # print (exp(-likelihood))
+            # print (log(1-exp(-likelihood)))
+            likelihood = - math.log(likelihood + sys.float_info.min)
             likelihoods.append(likelihood)
     if pred_mode == 'top':
         return real_times, pred_times
@@ -78,7 +84,7 @@ def load_data(args):
     random.seed(1)
     docs = random.sample(docs, int(len(docs) * 0.1))
     del predictor
-    print(datetime.datetime.now(), 'load data done')
+    print(datetime.datetime.now(), 'Load Data Done.')
     sys.stdout.flush()
     return docs
 
@@ -142,8 +148,8 @@ def predict(args):
             print (datetime.datetime.now(), 'Predict Time Done.')
             sys.stdout.flush()
             fp = open(args['score_prefix'] + '.nlog.txt', 'w')
-            for rt, pt in likelihoods:
-                fp.write('%f\t%f\n' % (rt, pt))
+            for likelihood in likelihoods:
+                fp.write('%f\n' % likelihood)
             fp.close()
             print (datetime.datetime.now(), 'Save Time Done.')
             sys.stdout.flush()
@@ -160,7 +166,8 @@ if __name__ == '__main__':
     predict_mode = sys.argv[3]
     community_count = [
         19,
-        287,
+        290,
+        # 287,
         # 265,
         # 10,
         # 50,

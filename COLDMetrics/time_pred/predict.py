@@ -17,7 +17,8 @@ if __name__ == '__main__':
         'COLD',
     ]
     datasets = [
-        'AAAI',
+        'MIXED_200', #19 290
+        # 'AAAI',
         # 'SIGCOMM',
         # 'dblp_citation',
         # 'dblp_coauthor',
@@ -25,6 +26,7 @@ if __name__ == '__main__':
     ]
     community_count = [
         19,
+        290,
         # 287,
         # 265,
         # 10,
@@ -39,7 +41,8 @@ if __name__ == '__main__':
 
     expi = 'topic'
     root = os.path.abspath('../..')
-    result = pickle.load(open('result.pkl', 'rb')) if os.path.isfile('result.pkl') else []
+    # result = pickle.load(open('result.pkl', 'rb')) if os.path.isfile('result.pkl') else []
+    result = []
     data = {'dataset': [], 'model': [], 'cc': [], 'lw': [], 'n': [], 'score': [], 'predict_mode': []}
     for dataset in datasets:
         for model in models:
@@ -47,6 +50,7 @@ if __name__ == '__main__':
                 subprocess.call(['python', 'predict_one.py', dataset, model, predict_mode, '>log.txt', '2>&1'])
                 result += pickle.load(open('result_one.pkl', 'rb'))
                 pickle.dump(result, open('result.pkl', 'wb'))
+    # print (result)
     for i in result:
         for k in data.keys():
             data[k].append(i[k])
