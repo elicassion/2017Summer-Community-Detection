@@ -91,31 +91,58 @@ class Predictor(object):
         
 
     #6, 9, 18
-    def show_community_time(self, t):
-        comm = {}
-        comm[6] = set()
-        comm[9] = set()
-        comm[18] = set()
-        for uname in self.uname2uid.keys():
-            uid = self.uname2uid[uname]
-            f = self.f[uid]
-            mu = self.mu[uid]
-            sigma = self.sigma[uid]
-            p_values = f*norm.pdf(t, mu, sigma).tolist()
-            v = []
-            v.append(p_values[6])
-            v.append(p_values[9])
-            v.append(p_values[18])
-            mmnorm = MinMaxScaler()
-            st_v = mmnorm.fit_transform(np.array(v).reshape((-1,1))).reshape(3)
-            if st_v[0] > 0.3 and v[0] > 1e-5:
-                comm[6].add(uname)
-            if st_v[1] > 0.3 and v[0] > 1e-5:
-                comm[9].add(uname)
-            if st_v[2] > 0.3 and v[0] > 1e-5:
-                comm[18].add(uname)
-        print ("Year: %d" % t)
-        print (len(comm[6]), len(comm[9]), len(comm[18]))
+    def show_community_time(self):
+        comm_t = []
+        for t in range(1955, 2017):
+            comm = [0 for i in range(34)]
+            # for i in range(34):
+            #     comm[i] = 0
+            for uname in self.uname2uid.keys():
+                uid = self.uname2uid[uname]
+                f = self.f[uid]
+                mu = self.mu[uid]
+                sigma = self.sigma[uid]
+                p_v = f*norm.pdf(t, mu, sigma).tolist()
+                mmnorm = MinMaxScaler()
+                st_v = mmnorm.fit_transform(np.array(p_v).reshape((-1,1))).reshape(34)
+                for i in range(34):
+                    if st_v[i] > 0.3 and p_v[i] > 1e-5:
+                        # comm[i].add(uname)
+                        comm[i] += 1
+            print ("Year: %d" % t)
+            comm_t.append(comm)
+        comm_vis_filename = os.path.join(self.vis_dir, "comm_vis.csv")
+        np.savetxt(comm_vis_filename, np.array(comm_t), fmt='%d', delimiter=',')
+        
+    def vis_comm(self):
+        if not os.path.exists(os.path.join(self.vis_dir, 'draw_comm_data')):
+            os.makedirs(os.path.join(self.vis_dir, 'draw_comm_data'))
+        for t in range(1955, 2017):
+            print ("Year: %d" % t)
+            au_comm = []
+            for uname in self.uname2uid.keys():
+                uid = self.uname2uid[uname]
+                f = self.f[uid]
+                mu = self.mu[uid]
+                sigma = self.sigma[uid]
+                p_v = f*norm.pdf(t, mu, sigma).tolist()
+                p_vd = {}
+                for i in range(34):
+                    p_vd[i] = p_v[i]
+                s_vt = sorted(p_vd.items(), key = lambda item:item[1], reverse=True)
+                s_v = s_vt[:2]
+                sm = s_v[0][1] + s_v[1][1]
+                if sm < 1e-10:
+                    s_v = [(s_v[0][0], 0.5), (s_v[1][0], 0.5)]
+                else:
+                    s_v = [(s_v[0][0], s_v[0][1]/sm), (s_v[1][0], s_v[1][1]/sm)]
+                au_comm.append(s_v)
+            
+            comm_vis_file = open(os.path.join(self.vis_dir, 'draw_comm_data', "comm_vis_%d.txt" % t), "w")
+            for item in au_comm:
+                comm_vis_file.write("%d %.3f\t%d %.3f\n" % (item[0][0], item[0][0], item[1][0], item[1][1]))
+            comm_vis_file.close()
+
 
 
 
@@ -124,5 +151,6 @@ data_dir = os.path.join('..', 'data', 'test_fos', 'big_data')
 result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', 'big_data', 'bd_083100')
 vis_dir = os.path.join('res', 'big_data')
 predictor = Predictor(data_dir, result_dir, vis_dir, 34)
-for i in range(2000, 2017):
-    predictor.show_community_time(i)
+
+# predictor.show_community_time()
+predictor.vis_comm()
