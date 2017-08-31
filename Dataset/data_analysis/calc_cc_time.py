@@ -114,6 +114,7 @@ class Predictor(object):
         dis_file_name = os.path.join(self.vis_dir, "%s_vis.csv" % uname)
         portions = []
         s_portions = []
+        # print (norm.pdf(2014, mu, sigma))
         for t in range(1955, 2017):
             p_values = f*norm.pdf(t, mu, sigma)
             st_p_values = potionScaler(p_values).tolist()
@@ -125,12 +126,12 @@ class Predictor(object):
         # print (st_sp)
         portions = np.array(portions)
         for i in range(34):
-            portions[i] *= st_sp[i]
+            portions[:,i] *= st_sp[i]
         # print (portions)
         np.savetxt(dis_file_name, portions, fmt='%.7f', delimiter=',')
 
     def find_nice(self, scope):
-        th = 4
+        th = 15
         lt = scope[0]
         rt = scope[1]
         nice_list = []
@@ -152,10 +153,15 @@ class Predictor(object):
 
 
 data_dir = os.path.join('..', 'data', 'test_fos', 'big_data')
-result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', 'big_data', 'bd_082800')
+result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', 'big_data', 'bd_083100')
 vis_dir = os.path.join('res', 'big_data')
 predictor = Predictor(data_dir, result_dir, vis_dir, 34)
-distribute = predictor.show_distribute('8039481B')
+# distribute = predictor.show_distribute('8039481B')
 # distribute = predictor.show_distribute('80006CCF')
 # distribute = predictor.show_distribute('077D8DEE')
+# distribute = predictor.show_distribute('80DDA9E9')
+# distribute = predictor.show_distribute('77498523')
+# distribute = predictor.show_distribute('80645803')
+# distribute = predictor.show_distribute('77498523')
+distribute = predictor.show_distribute('8051C0CB')
 # predictor.find_nice((1955, 2017))
