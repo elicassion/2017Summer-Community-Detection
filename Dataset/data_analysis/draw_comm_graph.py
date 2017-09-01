@@ -8,7 +8,7 @@ import time
 import sys
 
 R = 1000
-CC = 25
+CC = 6
 PI = np.pi
 RR = 0.03 # Random Rate
 
@@ -37,11 +37,16 @@ COLORS = [
 	'#e5006a',
 	'#e5004f',
 	'#e60033',
+	'#303030',
 	'#101010'
 ]
 
 CCMAP = {
-	1:
+	0:5, 1:5, 2:5, 3:5, 4:5, 
+	5:5, 6:5, 7:5, 8:0, 9:5, 
+	10:5, 11:5, 12:5, 13:5, 14:5, 
+	15:1, 16:2, 17:3, 18:5, 19:5, 
+	20:5, 21:5, 22:5, 23:4, 24:5
 }
 
 class ProgressBar:
@@ -87,6 +92,8 @@ def ratio_split(v1, v2, lmd):
 def get_node_xyc(au):
 	c1, v1 = au[0]
 	c2, v2 = au[1]
+	c1 = CCMAP[c1]
+	c2 = CCMAP[c2]
 	cx1 = np.cos(c1/CC*PI*2)*R
 	cy1 = np.sin(c1/CC*PI*2)*R
 	cx2 = np.cos(c2/CC*PI*2)*R
@@ -94,7 +101,7 @@ def get_node_xyc(au):
 	if v1 < 1e-10:
 		x = cx2 + random.uniform(-RR*cx2, RR*cx2)
 		y = cy2 + random.uniform(-RR*cy2, RR*cy2)
-		color = COLORS[c2]
+		color = COLORS[c2*round(len(COLORS)/CC)]
 	else:
 		lmd = v2/v1
 		x = ratio_split(cx1, cx2, lmd)
@@ -108,8 +115,8 @@ def get_node_xyc(au):
 			b = (cx1*cy2-cx2*cy1)/(cx1-cx2)
 			x = x + xr*R
 			y = k*x + b
-		r1, g1, b1 = hex_to_int(COLORS[c1])
-		r2, g2, b2 = hex_to_int(COLORS[c2])
+		r1, g1, b1 = hex_to_int(COLORS[c1*round(len(COLORS)/CC)])
+		r2, g2, b2 = hex_to_int(COLORS[c2*round(len(COLORS)/CC)])
 		r = round(ratio_split(r1, r2, lmd))
 		g = round(ratio_split(g1, g2, lmd))
 		b = round(ratio_split(b1, b2, lmd))
@@ -144,7 +151,9 @@ comm_vis_dir = os.path.join(vis_dir, 'draw_comm_data')
 if not os.path.exists(save_dir):
 	os.makedirs(save_dir)
 
-for t in range(1955, 2017):
+
+draw_year = [2016, 1987]
+for t in draw_year:
 	t = 2016
 	aus = load_data(comm_vis_dir, t)
 	pbar = ProgressBar(name="Calc Coordinate Year %d" % t, total=len(aus))
@@ -157,8 +166,8 @@ for t in range(1955, 2017):
 		plt.scatter(x, y, s=2, c=c)
 		pbar.move()
 		ct += 1
-		if ct == 10000:
-			break
+		# if ct == 10000:
+		# 	break
 	plt.draw()
 	plt.savefig(os.path.join(save_dir, 'fig_%d.png' % t), dpi=600)
-	break
+	# break
