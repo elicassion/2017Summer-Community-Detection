@@ -40,6 +40,10 @@ COLORS = [
 	'#101010'
 ]
 
+CCMAP = {
+	1:
+}
+
 class ProgressBar:
 	def __init__(self, name = '', total = 0, width = 20):
 		self.total = total
@@ -83,22 +87,27 @@ def ratio_split(v1, v2, lmd):
 def get_node_xyc(au):
 	c1, v1 = au[0]
 	c2, v2 = au[1]
-	cx1 = np.cos(c1/CC*PI)*R
-	cy1 = np.sin(c1/CC*PI)*R
-	cx2 = np.cos(c2/CC*PI)*R
-	cy2 = np.sin(c2/CC*PI)*R
+	cx1 = np.cos(c1/CC*PI*2)*R
+	cy1 = np.sin(c1/CC*PI*2)*R
+	cx2 = np.cos(c2/CC*PI*2)*R
+	cy2 = np.sin(c2/CC*PI*2)*R
 	if v1 < 1e-10:
-		x = cx2 + random.random(-RR*cx2, RR*cx2)
-		y = cy2 + random.random(-RR*cy2, RR*cy2)
+		x = cx2 + random.uniform(-RR*cx2, RR*cx2)
+		y = cy2 + random.uniform(-RR*cy2, RR*cy2)
 		color = COLORS[c2]
 	else:
 		lmd = v2/v1
 		x = ratio_split(cx1, cx2, lmd)
 		y = ratio_split(cy1, cy2, lmd)
-		# xr = random.random(-RR, RR)
-		# yr = random.random(-RR, RR)
-		# x = x + xr*x
-		# y = y + yr*y
+		xr = random.uniform(-RR, RR)
+		# yr = random.uniform(-RR, RR)
+		if abs(cx1 - cx2) < 1e-5:
+			y = y + y*xr
+		else:
+			k = (cy1-cy2)/(cx1-cx2)
+			b = (cx1*cy2-cx2*cy1)/(cx1-cx2)
+			x = x + xr*R
+			y = k*x + b
 		r1, g1, b1 = hex_to_int(COLORS[c1])
 		r2, g2, b2 = hex_to_int(COLORS[c2])
 		r = round(ratio_split(r1, r2, lmd))
@@ -120,6 +129,9 @@ def load_data(dir, t):
 		c2 = int(c2)
 		v1 = float(v1)
 		v2 = float(v2)
+		if (c1 == c2):
+			print (c1, c2, 'alert')
+			exit()
 		aus.append([(c1, v1), (c2, v2)])
 	return aus
 
@@ -133,15 +145,20 @@ if not os.path.exists(save_dir):
 	os.makedirs(save_dir)
 
 for t in range(1955, 2017):
+	t = 2016
 	aus = load_data(comm_vis_dir, t)
 	pbar = ProgressBar(name="Calc Coordinate Year %d" % t, total=len(aus))
 	pbar.start()
 	# Xs = [[] for i in range(CC)]
 	# Ys = [[] for i in range(CC)]
+	ct = 0
 	for au in aus:
 		x, y, c= get_node_xyc(au)
 		plt.scatter(x, y, s=2, c=c)
 		pbar.move()
+		ct += 1
+		if ct == 10000:
+			break
 	plt.draw()
-	plt.savefig(os.path.join(save_dir, 'fig_%d.png' % t))
+	plt.savefig(os.path.join(save_dir, 'fig_%d.png' % t), dpi=600)
 	break
