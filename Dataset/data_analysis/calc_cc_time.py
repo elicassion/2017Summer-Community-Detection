@@ -93,8 +93,10 @@ class Predictor(object):
         
 
     def show_distribute(self, uname):
+        if not os.path.exists(os.path.join(self.vis_dir, 'person')):
+            os.makedirs(os.path.join(self.vis_dir, 'person'))
         uid = self.uname2uid[uname]
-        res_para_file = open(os.path.join(self.vis_dir, "%s_para.txt" % uname), "w")
+        res_para_file = open(os.path.join(self.vis_dir, 'person', "%s_para.txt" % uname), "w")
         # print (self.f[uid])
         # print (self.mu[uid])
         # print (self.sigma[uid])
@@ -111,7 +113,7 @@ class Predictor(object):
             res_para_file.write("%.18e\t" % i)
         res_para_file.close()
 
-        dis_file_name = os.path.join(self.vis_dir, "%s_vis.csv" % uname)
+        dis_file_name = os.path.join(self.vis_dir, 'person', "%s_vis.csv" % uname)
         portions = []
         s_portions = []
         # print (norm.pdf(2014, mu, sigma))
@@ -125,10 +127,10 @@ class Predictor(object):
         st_sp = mmnorm.fit_transform(np.array(s_portions).reshape((-1,1))).reshape(62)
         # print (st_sp)
         portions = np.array(portions)
-        for i in range(34):
-            portions[:,i] *= st_sp[i]
+        for i in range(62):
+            portions[i] *= st_sp[i]
         # print (portions)
-        np.savetxt(dis_file_name, portions, fmt='%.7f', delimiter=',')
+        np.savetxt(dis_file_name, portions, fmt='%.18f', delimiter=',')
 
     def find_nice(self, scope):
         th = 15
@@ -144,24 +146,27 @@ class Predictor(object):
                     count += 1
             if count >= th:
                 nice_list.append(uname)
-        nice_file = open(os.path.join(self.vis_dir, "nice_%d.txt" % th), "w")
+        if not os.path.exists(os.path.join(self.vis_dir, 'person')):
+            os.makedirs(os.path.join(self.vis_dir, 'person'))
+        nice_file = open(os.path.join(self.vis_dir, 'person', "nice_%d.txt" % th), "w")
         for i in nice_list:
             nice_file.write("%s\n" % i)
         print ("Nice Person Count: %d" % len(nice_list))
 
 
 
-
-data_dir = os.path.join('..', 'data', 'test_fos', 'big_data')
-result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', 'big_data', 'bd_083100')
-vis_dir = os.path.join('res', 'big_data')
-predictor = Predictor(data_dir, result_dir, vis_dir, 34)
-# distribute = predictor.show_distribute('8039481B')
-# distribute = predictor.show_distribute('80006CCF')
-# distribute = predictor.show_distribute('077D8DEE')
-# distribute = predictor.show_distribute('80DDA9E9')
-# distribute = predictor.show_distribute('77498523')
-# distribute = predictor.show_distribute('80645803')
-# distribute = predictor.show_distribute('77498523')
+set_type = 'new_big_data'
+data_dir = os.path.join('..', 'data', 'test_fos', set_type)
+result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', set_type, 'bd_083100')
+vis_dir = os.path.join('res', set_type)
+predictor = Predictor(data_dir, result_dir, vis_dir, 25)
+distribute = predictor.show_distribute('8039481B')
+distribute = predictor.show_distribute('80006CCF')
+distribute = predictor.show_distribute('077D8DEE')
+distribute = predictor.show_distribute('80DDA9E9')
+distribute = predictor.show_distribute('77498523')
+distribute = predictor.show_distribute('80645803')
+distribute = predictor.show_distribute('77498523')
 distribute = predictor.show_distribute('8051C0CB')
+# distribute = predictor.show_distribute('7293FC10')
 # predictor.find_nice((1955, 2017))

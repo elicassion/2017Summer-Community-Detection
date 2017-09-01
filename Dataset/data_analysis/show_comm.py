@@ -146,10 +146,10 @@ class Predictor(object):
 
 
 
-
-data_dir = os.path.join('..', 'data', 'test_fos', 'new_big_data')
-result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', 'new_big_data', 'bd_083100')
-vis_dir = os.path.join('res', 'new_big_data')
+set_type = 'new_big_data'
+data_dir = os.path.join('..', 'data', 'test_fos', set_type)
+result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', set_type, 'bd_083100')
+vis_dir = os.path.join('res', set_type)
 predictor = Predictor(data_dir, result_dir, vis_dir, 25)
 
 predictor.show_community_time()
