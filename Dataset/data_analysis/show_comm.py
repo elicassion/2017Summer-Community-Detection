@@ -94,8 +94,8 @@ class Predictor(object):
     def show_community_time(self):
         comm_t = []
         for t in range(1955, 2017):
-            comm = [0 for i in range(34)]
-            # for i in range(34):
+            comm = [0 for i in range(self.cc)]
+            # for i in range(self.cc):
             #     comm[i] = 0
             for uname in self.uname2uid.keys():
                 uid = self.uname2uid[uname]
@@ -104,8 +104,8 @@ class Predictor(object):
                 sigma = self.sigma[uid]
                 p_v = f*norm.pdf(t, mu, sigma).tolist()
                 mmnorm = MinMaxScaler()
-                st_v = mmnorm.fit_transform(np.array(p_v).reshape((-1,1))).reshape(34)
-                for i in range(34):
+                st_v = mmnorm.fit_transform(np.array(p_v).reshape((-1,1))).reshape(self.cc)
+                for i in range(self.cc):
                     if st_v[i] > 0.3 and p_v[i] > 1e-5:
                         # comm[i].add(uname)
                         comm[i] += 1
@@ -127,30 +127,30 @@ class Predictor(object):
                 sigma = self.sigma[uid]
                 p_v = f*norm.pdf(t, mu, sigma).tolist()
                 p_vd = {}
-                for i in range(34):
+                for i in range(self.cc):
                     p_vd[i] = p_v[i]
                 s_vt = sorted(p_vd.items(), key = lambda item:item[1], reverse=True)
                 s_v = s_vt[:2]
                 sm = s_v[0][1] + s_v[1][1]
                 if sm < 1e-10:
-                    s_v = [(s_v[0][0], 0.5), (s_v[1][0], 0.5)]
+                    r_v = [(s_v[0][0], 0.5), (s_v[1][0], 0.5)]
                 else:
-                    s_v = [(s_v[0][0], s_v[0][1]/sm), (s_v[1][0], s_v[1][1]/sm)]
-                au_comm.append(s_v)
+                    r_v = [(s_v[0][0], s_v[0][1]/sm), (s_v[1][0], s_v[1][1]/sm)]
+                au_comm.append(r_v)
             
             comm_vis_file = open(os.path.join(self.vis_dir, 'draw_comm_data', "comm_vis_%d.txt" % t), "w")
             for item in au_comm:
-                comm_vis_file.write("%d %.3f\t%d %.3f\n" % (item[0][0], item[0][0], item[1][0], item[1][1]))
+                comm_vis_file.write("%d %.3f\t%d %.3f\n" % (item[0][0], item[0][1], item[1][0], item[1][1]))
             comm_vis_file.close()
 
 
 
 
 
-data_dir = os.path.join('..', 'data', 'test_fos', 'big_data')
-result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', 'big_data', 'bd_083100')
-vis_dir = os.path.join('res', 'big_data')
-predictor = Predictor(data_dir, result_dir, vis_dir, 34)
+data_dir = os.path.join('..', 'data', 'test_fos', 'new_big_data')
+result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', 'new_big_data', 'bd_083100')
+vis_dir = os.path.join('res', 'new_big_data')
+predictor = Predictor(data_dir, result_dir, vis_dir, 25)
 
-# predictor.show_community_time()
+predictor.show_community_time()
 predictor.vis_comm()
