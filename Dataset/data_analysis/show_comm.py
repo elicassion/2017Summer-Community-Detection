@@ -117,8 +117,10 @@ class Predictor(object):
     def vis_comm(self):
         if not os.path.exists(os.path.join(self.vis_dir, 'draw_comm_data')):
             os.makedirs(os.path.join(self.vis_dir, 'draw_comm_data'))
+        comm_t = []
         for t in range(1955, 2017):
             print ("Year: %d" % t)
+            comm = [0 for i in range(self.cc)]
             au_comm = []
             for uname in self.uname2uid.keys():
                 uid = self.uname2uid[uname]
@@ -137,12 +139,18 @@ class Predictor(object):
                 else:
                     r_v = [(s_v[0][0], s_v[0][1]/sm), (s_v[1][0], s_v[1][1]/sm)]
                 au_comm.append(r_v)
+                if s_v[0][1] > 1e-5:
+                    comm[s_v[0][0]] += 1
+                if s_v[1][1] > 1e-5:
+                    comm[s_v[1][0]] += 1
+            comm_t.append(comm)
             
             comm_vis_file = open(os.path.join(self.vis_dir, 'draw_comm_data', "comm_vis_%d.txt" % t), "w")
             for item in au_comm:
                 comm_vis_file.write("%d %.3f\t%d %.3f\n" % (item[0][0], item[0][1], item[1][0], item[1][1]))
             comm_vis_file.close()
-
+        comm_vis_filename = os.path.join(self.vis_dir, "comm_vis.csv")
+        np.savetxt(comm_vis_filename, np.array(comm_t), fmt='%d', delimiter=',')
 
 
 
@@ -152,5 +160,5 @@ result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', set_type, 'bd_083100'
 vis_dir = os.path.join('res', set_type)
 predictor = Predictor(data_dir, result_dir, vis_dir, 25)
 
-predictor.show_community_time()
+# predictor.show_community_time()
 predictor.vis_comm()
