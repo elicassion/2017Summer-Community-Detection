@@ -20,6 +20,7 @@ class Predictor(object):
         self.vis_dir = vis_dir
         self.cc = cc
         self.uname2uid = {}
+        self.docs = {}
         self.links = set()
         self.min_time = 1955
         self.max_time = 2016
@@ -42,6 +43,20 @@ class Predictor(object):
         else:
             self.uname2uid = ujson.loads(open(os.path.join(vis_dir, 'uname2uid.json'),"r").read())
             print ("Load Data Done.")
+
+        if not os.path.exists(os.path.join(vis_dir, 'docs.json')):
+            for line in open(os.path.join(data_dir, 'docs.txt')):
+                line = line.strip().split('\t')
+                if line[0] not in self.docs:
+                    self.docs[line[0]] = {}
+                if line[1] not in self.docs[line[0]]:
+                    self.docs[line[0]][line[1]] = []
+                self.docs[line[0]][line[1]].append(line[2])
+            ujson.dump(self.docs, open('docs.json', 'w'))
+            print ("Load Docs Done.")
+        else:
+            self.docs = ujson.loads(open(os.path.join(vis_dir, 'docs.json'), 'r').read())
+            print ("Load Docs Done.")
 
 
     def load_result(self, result_dir):
@@ -152,7 +167,30 @@ class Predictor(object):
         comm_vis_filename = os.path.join(self.vis_dir, "comm_vis.csv")
         np.savetxt(comm_vis_filename, np.array(comm_t), fmt='%d', delimiter=',')
 
-
+    def vis_topic(self):
+        if not os.path.exists(os.path.join(self.vis_dir, 'comm_topic')):
+            os.makedirs(os.path.join(self.vis_dir, 'comm_topic'))
+        comm = [[] for i in range(self.cc)]
+        for uname in self.uname2uid.keys():
+            uid = self.uname2uid[uname]
+            f = self.f[uid]
+            mu = self.mu[uid]
+            sigma = self.sigma[uid]
+            for year in self.docs[uid].keys():
+                t = int(year)
+                p_v = f*norm.pdf(t, mu, sigma).tolist()
+                p_vd = {}
+                for i in range(self.cc):
+                    p_vd[i] = p_v[i]
+                s_vt = sorted(p_vd.items(), key = lambda item:item[1], reverse=True)
+                cc = s_vt[0][0]
+                for title in self.docs[uid][year]:
+                    comm[cc].append(title)
+        for ccnum, titles in enumerate(comm):
+            f = open(os.path.join(self.vis_dir, 'comm_topic', '%d.txt' % ccnum), 'w')
+            for title in titles:
+                f.write("%s\n" % title)
+            f.close()
 
 set_type = 'new_big_data'
 data_dir = os.path.join('..', 'data', 'test_fos', set_type)
@@ -161,4 +199,5 @@ vis_dir = os.path.join('res', set_type)
 predictor = Predictor(data_dir, result_dir, vis_dir, 25)
 
 # predictor.show_community_time()
-predictor.vis_comm()
+# predictor.vis_comm()
+predictor.vis_topic()

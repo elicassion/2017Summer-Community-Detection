@@ -136,13 +136,14 @@ class Predictor(object):
         th = 15
         lt = scope[0]
         rt = scope[1]
+        md = (lt+rt)/2
         nice_list = []
         for uname in self.uname2uid.keys():
             uid = self.uname2uid[uname]
             count = 0
             mu = self.mu[uid]
             for i in mu:
-                if i > lt and i < rt and abs(i-2008) > 0.5:
+                if i > lt and i < rt and abs(i-md) > 0.5 and abs(i-2008) > 0.5:
                     count += 1
             if count >= th:
                 nice_list.append(uname)
@@ -152,7 +153,13 @@ class Predictor(object):
         for i in nice_list:
             nice_file.write("%s\n" % i)
         print ("Nice Person Count: %d" % len(nice_list))
+        return nice_list
 
+
+    def show_all_dist(self):
+        nl = self.find_nice((1955, 2017))
+        for name in nl:
+            self.show_distribute(name)
 
 
 set_type = 'new_big_data'
@@ -160,13 +167,14 @@ data_dir = os.path.join('..', 'data', 'test_fos', set_type)
 result_dir = os.path.join('..', 'res', 'cdot', 'test_fos', set_type, 'bd_083100')
 vis_dir = os.path.join('res', set_type)
 predictor = Predictor(data_dir, result_dir, vis_dir, 25)
-distribute = predictor.show_distribute('8039481B')
-distribute = predictor.show_distribute('80006CCF')
-distribute = predictor.show_distribute('077D8DEE')
-distribute = predictor.show_distribute('80DDA9E9')
-distribute = predictor.show_distribute('77498523')
-distribute = predictor.show_distribute('80645803')
-distribute = predictor.show_distribute('77498523')
-distribute = predictor.show_distribute('8051C0CB')
+# distribute = predictor.show_distribute('8039481B')
+# distribute = predictor.show_distribute('80006CCF')
+# distribute = predictor.show_distribute('077D8DEE')
+# distribute = predictor.show_distribute('80DDA9E9')
+# distribute = predictor.show_distribute('77498523')
+# distribute = predictor.show_distribute('80645803')
+# distribute = predictor.show_distribute('77498523')
+# distribute = predictor.show_distribute('8051C0CB')
 # distribute = predictor.show_distribute('7293FC10')
 # predictor.find_nice((1955, 2017))
+predictor.show_all_dist()

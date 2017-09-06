@@ -7,8 +7,8 @@ import random
 import time
 import sys
 
-R = 1000
-CC = 6
+R = 300
+CC = 5
 PI = np.pi
 # RR = 0.3 # Random Rate
 
@@ -115,13 +115,13 @@ def get_node_xyc(au):
 					RR = RRBase/lmd
 				else:
 					RR = RRBase * lmd
-		size = MAXSIZE * max(v2, v1) / 30
+		size = MAXSIZE * max(v2, v1) / 5
 		x = ratio_split(cx1, cx2, lmd)
 		y = ratio_split(cy1, cy2, lmd)
 		rangle = random.uniform(0, 2*PI)
 		rr = random.uniform(0, RR)
-		y = y + np.sin(rangle)*rr
-		x = x + np.cos(rangle)*rr
+		y = y + np.sin(rangle)*rr*R
+		x = x + np.cos(rangle)*rr*R
 		r1, g1, b1 = hex_to_int(COLORS[c1*round(len(COLORS)/CC)])
 		r2, g2, b2 = hex_to_int(COLORS[c2*round(len(COLORS)/CC)])
 		r = round(ratio_split(r1, r2, lmd))
@@ -145,7 +145,11 @@ def load_data(dir, t):
 		v2 = float(v2)
 		c1 = CCMAP[c1]
 		c2 = CCMAP[c2]
+		if c1 == 5 or c2 == 5:
+			continue
 		if c1 == c2:
+			continue
+		if v1 == v2:
 			continue
 		aus.append([(c1, v1), (c2, v2)])
 	return aus
@@ -160,7 +164,7 @@ if not os.path.exists(save_dir):
 	os.makedirs(save_dir)
 
 
-draw_year = [2016, 1987]
+draw_year = range(1987, 2017)
 for t in draw_year:
 	aus = load_data(comm_vis_dir, t)
 	pbar = ProgressBar(name="Calc Coordinate Year %d" % t, total=len(aus))
@@ -173,9 +177,11 @@ for t in draw_year:
 		plt.scatter(x, y, s=s, c=c)
 		pbar.move()
 		ct += 1
-		if ct == 10000:
-			break
+		# if ct == 10000:
+		# 	break
+	plt.ylim(-600, 600)
+	plt.xlim(-600, 600)
 	plt.draw()
-	plt.savefig(os.path.join(save_dir, 'fig_%d.png' % t), dpi=600)
+	plt.savefig(os.path.join(save_dir, 'fig_%d_noth.png' % t), dpi=600)
 	plt.close('all')
 	# break
