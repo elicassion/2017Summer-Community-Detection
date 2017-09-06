@@ -176,7 +176,7 @@ class Predictor(object):
             f = self.f[uid]
             mu = self.mu[uid]
             sigma = self.sigma[uid]
-            for year in self.docs[uid].keys():
+            for year in self.docs[uname].keys():
                 t = int(year)
                 p_v = f*norm.pdf(t, mu, sigma).tolist()
                 p_vd = {}
@@ -184,7 +184,7 @@ class Predictor(object):
                     p_vd[i] = p_v[i]
                 s_vt = sorted(p_vd.items(), key = lambda item:item[1], reverse=True)
                 cc = s_vt[0][0]
-                for title in self.docs[uid][year]:
+                for title in self.docs[uname][year]:
                     comm[cc].append(title)
         for ccnum, titles in enumerate(comm):
             f = open(os.path.join(self.vis_dir, 'comm_topic', '%d.txt' % ccnum), 'w')
