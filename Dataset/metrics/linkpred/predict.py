@@ -12,7 +12,7 @@ import pandas as pd
 if __name__ == '__main__':
     models = [
         # 'MAGIC',
-        # 'bigclam',
+        'bigclam',
         'cdot',
     ]
     modes = [
@@ -36,7 +36,11 @@ if __name__ == '__main__':
             ],
             'MIXED_200':[
                 # ('CDOT_L0_082410', 19),
-                ('CDOT_L1_082920', 290)
+                # ('CDOT_L0_083109', 19),
+                # ('CDOT_L1_083109', 290)
+                # ('CDOT_L1_082920', 290)
+                ('CDOT_L0_090309', 19),
+                ('CDOT_L1_090309', 290)
             ],
             'AAAI':[ 
                 # ('CDOT2', 100),# ('CDOT3', 100),# ('CDOT8', 100),
@@ -65,6 +69,10 @@ if __name__ == '__main__':
             ]
         },
         'bigclam': {
+        	'MIXED_200':[
+                ('bigclam_L0_090309', 19),
+                ('bigclam_L1_090309', 290)
+            ],
             'AAAI':[
                 # ('bigclam_100', 100),
                 # ('bigclam_L1_072416', 287),
