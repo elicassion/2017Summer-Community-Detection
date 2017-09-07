@@ -76,7 +76,8 @@ def get_pos_edges(data_dir, predictor):
             tp = tpl.split(' ')
             edges.add((doc_id, ref_id, int(tp[0]), int(tp[1])))
     print ("Load Pos Edges Done. %d" % len(edges))
-    return edges
+    n_edges = random.sample(edges, round(len(edges) * 0.1))
+    return n_edges
 
 
 def get_neg_edges(edges, predictor, max_uid, num):

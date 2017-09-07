@@ -56,13 +56,12 @@ def predict_time(predictor, pred_mode, docs, num):
             time = predictor.time_predict(pred_mode, doc)
             real_times.append(doc[2])
             pred_times.append(time)
-            return real_times, pred_times
         elif pred_mode == 'nlog':
-            likelihood = predictor.time_predict(pred_mode, doc)
+            res = predictor.time_predict(pred_mode, doc)
             # print ('likelihood', likelihood)
             # print (exp(-likelihood))
             # print (log(1-exp(-likelihood)))
-            likelihood = - math.log(likelihood + sys.float_info.min)
+            likelihood = - math.log(res)
             likelihoods.append(likelihood)
     if pred_mode == 'top':
         return real_times, pred_times
@@ -106,12 +105,20 @@ def predict(args):
     }
     args['data_dir'] = '{root:s}/Data/{exp:s}/{dataset:s}/'.format(**args)
     args['result_prefix'] = model2result_prefix[args['model']].format(**args)
-    model2score_prefix = {
-        'CTCDPoi': '{root:s}/Score/{exp:s}/{dataset:s}/{model:s}/timepred/cc{cc:d}_lw{lw:d}_{n:s}',
-        'CTCDBer': '{root:s}/Score/{exp:s}/{dataset:s}/{model:s}/timepred/cc{cc:d}_lw{lw:d}_{n:s}',
-        'COLDSlice': '{root:s}/Score/{exp:s}/{dataset:s}/{model:s}/timepred/cc{cc:d}_lw{lw:d}_{n:s}',
-        'COLD': '{root:s}/Score/{exp:s}/{dataset:s}/{model:s}/timepred/cc{cc:d}_lw{lw:d}_{n:s}',
-    }
+    if args['predict_mode'] == 'nlog':
+        model2score_prefix = {
+            'CTCDPoi': '{root:s}/Score/{exp:s}/{dataset:s}/{model:s}/timepred/cc{cc:d}_lw{lw:d}_{n:s}',
+            'CTCDBer': '{root:s}/Score/{exp:s}/{dataset:s}/{model:s}/timepred/cc{cc:d}_lw{lw:d}_{n:s}',
+            'COLDSlice': '{root:s}/Score/{exp:s}/{dataset:s}/{model:s}/timepred/cc{cc:d}_lw{lw:d}_{n:s}',
+            'COLD': '{root:s}/Score/{exp:s}/{dataset:s}/{model:s}/timepred/cc{cc:d}_lw{lw:d}_{n:s}',
+        }
+    elif args['predict_mode'] == 'top':
+        model2score_prefix = {
+            'CTCDPoi': '{root:s}/Score/{exp:s}/{dataset:s}/{model:s}/timepred/cc{cc:d}_lw{lw:d}_{n:s}_{tl:.1f}',
+            'CTCDBer': '{root:s}/Score/{exp:s}/{dataset:s}/{model:s}/timepred/cc{cc:d}_lw{lw:d}_{n:s}_{tl:.1f}',
+            'COLDSlice': '{root:s}/Score/{exp:s}/{dataset:s}/{model:s}/timepred/cc{cc:d}_lw{lw:d}_{n:s}_{tl:.1f}',
+            'COLD': '{root:s}/Score/{exp:s}/{dataset:s}/{model:s}/timepred/cc{cc:d}_lw{lw:d}_{n:s}_{tl:.1f}',
+        }
     args['score_prefix'] = model2score_prefix[args['model']].format(**args)
     mkdir_if_not_exists(os.path.split(args['score_prefix'])[0])
     

@@ -2,6 +2,7 @@ import numpy as np
 import os
 from scipy.stats import beta
 from sklearn.preprocessing import MinMaxScaler
+import math
 
 class predictor(object):
 
@@ -96,7 +97,11 @@ class predictor(object):
             # print (pt)
             mmnorm = MinMaxScaler()
             st_p_values = mmnorm.fit_transform(np.array(pt).reshape((-1,1))).reshape(101)
-            return st_p_values[self.t.index(time)]
+            nlog = st_p_values[round(time)]
+            if nlog < math.e ** (-5):
+                return math.e ** (-5)
+            else:
+                return nlog
             # return pt[round(time)]
         elif predict_mode == 'top':
             pt[~np.isfinite(pt)] = 0

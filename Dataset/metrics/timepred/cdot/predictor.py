@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import math
 from math import log, exp
 from scipy.stats import norm
 from sklearn.preprocessing import MinMaxScaler
@@ -94,7 +95,7 @@ class predictor(object):
         self.C = cc
         print ("load result done.")
         # print (np.dot(self.f[0], self.f[1]))
-        print (np.dot(norm.pdf(1994, self.mu[0], self.sigma[0]), norm.pdf(1998, self.mu[1], self.sigma[1])))
+        # print (np.dot(norm.pdf(1994, self.mu[0], self.sigma[0]), norm.pdf(1998, self.mu[1], self.sigma[1])))
 
 
     def calc_error(self, x, y):
@@ -123,12 +124,22 @@ class predictor(object):
                 p_values[t-self.min_time] = np.sum(self.f[from_user]*self.f[to_user]*\
                             norm.pdf(from_time, self.mu[from_user], self.sigma[from_user])*\
                             norm.pdf(t, self.mu[to_user], self.sigma[to_user]))
-            p_values = np.array(p_values)
+            p_values = np.array(p_values) * 1e100
             # st_p_values = p_values / (np.sum(p_values) + sys.float_info.min)
             mmnorm = MinMaxScaler()
             st_p_values = mmnorm.fit_transform(np.array(p_values).reshape((-1,1))).reshape(62).tolist()
             nlog = st_p_values[to_time-1955]
-            result = - log(nlog + sys.float_info.min)
+            if nlog < 1e-5:
+                return 5
+            else:
+                result = - log(nlog + sys.float_info.min)
+            if math.isnan(result):
+                print ("NaN Occurs.")
+                print (from_user, to_user, from_time, to_time)
+                print (p_values)
+                print (st_p_values)
+                print (nlog)
+                print (result)
             # result = - log(1 - exp(-nlog) + sys.float_info.min)
             return result
         else:
@@ -152,7 +163,7 @@ class predictor(object):
                 p_values = [item[1] for item in predict_p]
                 # min max norm
                 mmnorm = MinMaxScaler()
-                p_values = mmnorm.fit_transform(np.array(p_values).reshape((-1,1))).reshape(37).tolist()
+                p_values = mmnorm.fit_transform(np.array(p_values).reshape((-1,1))).reshape(self.max_time-self.min_time+1).tolist()
                 accumulate_p = 0
                 sum_freq = 0
                 for t2, freq in true_t2.items():
@@ -165,7 +176,7 @@ class predictor(object):
                 st_p_keys = [item[0] for item in st_p]
                 st_p_values = [item[1] for item in st_p]
                 mmnorm = MinMaxScaler()
-                st_p_values = mmnorm.fit_transform(np.array(st_p_values).reshape((-1,1))).reshape(37).tolist()
+                st_p_values = mmnorm.fit_transform(np.array(st_p_values).reshape((-1,1))).reshape(self.max_time-self.min_time+1).tolist()
                 result = 0
                 sum_freq = 0
                 for t2, freq in true_t2.items():

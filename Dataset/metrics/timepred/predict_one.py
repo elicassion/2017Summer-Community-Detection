@@ -3,6 +3,7 @@ import copy
 import sys
 import random
 import gc
+import time
 import datetime
 import ujson
 from multiprocessing.pool import Pool
@@ -12,18 +13,47 @@ from sklearn.metrics import roc_auc_score
 # sys.path.append(os.path.abspath('..'))
 from bigclam.predictor import predictor as BIGCLAMPredictor
 from cdot.predictor import predictor as CDOTPredictor
+import numpy as np
 
+class ProgressBar:
+    def __init__(self, name = '', total = 0, width = 20):
+        self.total = total
+        self.width = width
+        self.count = 0
+        self.name = name
+        self.start_time = 0
+
+    def start(self):
+        self.start_time = time.time()
+
+    def move(self):
+        self.count += 1
+        self.showProgress()
+
+    def showProgress(self):
+        progress = self.width * self.count / self.total
+        elapsed = time.time() - self.start_time
+        eta = elapsed * (self.total / self.count - 1)
+        sys.stdout.write('%s: [%d/%d] ' % (self.name, self.count, self.total))
+        sys.stdout.write('[' + '=' * round(progress) + '>' + '-' * round(self.width - progress) + '] ')
+        sys.stdout.write('Elapsed: %ds/ETA: %ds\r' % (round(elapsed), round(eta)))
+        if progress == self.width:
+            sys.stdout.write('\n')
+        sys.stdout.flush()
 
 def prdict_edges(predictor, edges, tag, predict_mode, toleration):
     scores = []
     count = 0
     # for edge in random.sample(edges, num):
+    predict_bar = ProgressBar(name="Predicting", total=len(edges))
+    predict_bar.start()
     for edge in edges:
         scores.append(predictor.time_predict(*edge, predict_mode, toleration))
         if count % 100000 == 0:
-            print(datetime.datetime.now(), tag, count, scores[-1])
+            print(datetime.datetime.now(), tag, count, np.sum(scores)/len(scores))
             sys.stdout.flush()
         count += 1
+        predict_bar.move()
         # if count < 10:
         #     print (edge)
     return scores

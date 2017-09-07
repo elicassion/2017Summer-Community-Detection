@@ -38,7 +38,11 @@ if __name__ == '__main__':
             ],
             'MIXED_200':[
                 # ('CDOT_L0_082410', 19),
-                ('CDOT_L1_082920', 290)
+                # ('CDOT_L0_083109', 19),
+                ('CDOT_L0_090709', 19),
+                # ('CDOT_L1_083109', 290),
+                # ('CDOT_L1_082920', 290),
+                # ('CDOT_L1_090608', 290),
             ],
             'AAAI':[ 
                 # ('CDOT2', 100),# ('CDOT3', 100),# ('CDOT8', 100),# ('CDOT_L0', 19),
@@ -83,9 +87,9 @@ if __name__ == '__main__':
     }
     tolerations = np.linspace(0.1, 1, 10).tolist()
     predict_modes = [
-        # 'topk',
+        'topk',
         # 'map'
-        'nlog'
+        # 'nlog'
     ]
     # Call predictions for each set of parameters
     dataset_path = 'data'
