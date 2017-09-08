@@ -10,127 +10,136 @@ import pandas as pd
 #link prediction
 
 if __name__ == '__main__':
-    models = [
-        # 'MAGIC',
-        # 'bigclam',
-        'cdot',
-    ]
-    modes = [
-      # 'cite', 
-      # 'coau',
-      # 's_cite',
-      't_cite'
-      # 'test_fos'
-    ]
-    conferences = [
-        # 'big_data' # 34
-      # 'AAAI', # 19 287 1287 
-      # 'ACL', # 19 278 1204 
-      # 'SIGCOMM', # 19 265 1060 
-      'MIXED_200' # 19 290 1601
-    ]
-    versions = {
-        'cdot': {
-            'big_data': [
-                ('bd_082800', 34)
-            ],
-            'MIXED_200':[
-                # ('CDOT_L0_082410', 19),
-                # ('CDOT_L0_083109', 19),
-                # ('CDOT_L1_083109', 290),
-                # ('CDOT_L1_082920', 290),
-                # ('CDOT_L0_090309', 19),
-                # ('CDOT_L1_090309', 290),
-                # ('CDOT_L1_090409', 290),
-                # ('CDOT_L1_090509', 290),
-                # ('CDOT_L1_090515', 290),
-                # ('CDOT_L1_090520', 290),
-                # ('CDOT_L1_090523', 290),
-                # ('CDOT_L1_090608', 290),
-                ('CDOT_L1_090613', 290),
-            ],
-            'AAAI':[ 
-                # ('CDOT2', 100),# ('CDOT3', 100),# ('CDOT8', 100),
-                # ('CDOT_L0', 19),# ('CDOT_L0_071923', 19),# ('CDOT_L0_ori', 19),
-                # ('CDOT_L0_072317', 19),# ('CDOT_L1_072416', 287),# ('CDOT_L2_072422', 1287),
-                # ('CDOT_L0_072518', 19),# ('CDOT_L1_072518', 287),# ('CDOT_L0_072522', 19),
-                # ('CDOT_L1_072522', 287),# ('CDOT_L0_072910', 19),# ('CDOT_L1_073110', 287),
-                # ('CDOT_L1_073112', 287),# ('CDOT_L1_073116', 287),# ('CDOT_L1_073120', 287),
-                # ('CDOT_L1_080101', 287),# ('CDOT_L0_080111', 19),# ('CDOT_L1_082618', 287),
-                ('CDOT_L1_082620', 287),
-            ],
-            'ACL':[ 
-                # ('CDOT_L0_072417', 19), # ACL
-                # ('CDOT_L1_072422', 278), # ACL
-                ('CDOT_L0_072521', 19), # ACL
-                ('CDOT_L1_072521', 278), # ACL
-            ],
-            'SIGCOMM':[
-                # ('CDOT_L0_072418', 19), # SIGCOMM
-                # ('CDOT_L1_072422', 265), #SIGCOMM
-                # ('CDOT_L0_072518', 19), # SIGCOMM
-                # ('CDOT_L0_072521', 19), # SIGCOMM
-                # ('CDOT_L1_072518', 265), #SIGCOMM
-                # ('CDOT_L1_072522', 265), #SIGCOMM
-                ('CDOT_L0_072816', 19), #SIGCOMM
-            ]
-        },
-        'bigclam': {
-        	'MIXED_200':[
-                # ('bigclam_L0_090309', 19),
-                # ('bigclam_L1_090309', 290),
-                # ('bigclam_L1_090409', 290),
-                ('bigclam_L1_090509', 290),
-            ],
-            'AAAI':[
-                # ('bigclam_100', 100),
-                # ('bigclam_L1_072416', 287),
-                # ('bigclam_L2_072414', 1287),
-                # ('bigclam_L0_072518', 19),
-                # ('bigclam_L1_072518', 287),
-            ],
-            'ACL':[
-                # ('bigclam_L0_072416', 19), # ACL
-                # ('bigclam_L1_072416', 278), # ACL
-                # ('bigclam_L2_072500', 1204), # ACL
-                ('bigclam_L0_072521', 19), # ACL
-                ('bigclam_L1_072521', 278), # ACL
-            ],
-            'SIGCOMM':[
-                # ('bigclam_L0_072417', 19), # SIGCOMM
-                # ('bigclam_L1_072417', 265), # SIGCOMM
-                # ('bigclam_L2_072500', 1060), # SIGCOMM
-                # ('bigclam_L0_072518', 19), # SIGCOMM
-                # ('bigclam_L0_072521', 19), # SIGCOMM
-                # ('bigclam_L1_072518', 265), # SIGCOMM
-            ]
+	models = [
+		# 'MAGIC',
+		'bigclam',
+		# 'cdot',
+	]
+	modes = [
+	  # 'cite', 
+	  # 'coau',
+	  # 's_cite',
+	  't_cite'
+	  # 'test_fos'
+	]
+	conferences = [
+		# 'big_data' # 34
+	  # 'AAAI', # 19 287 1287 
+	  # 'ACL', # 19 278 1204 
+	  # 'SIGCOMM', # 19 265 1060 
+	  'MIXED_200' # 19 290 1601
+	]
+	versions = {
+		'cdot': {
+			'big_data': [
+				('bd_082800', 34)
+			],
+			'MIXED_200':[
+				# ('CDOT_L0_082410', 19),
+				# ('CDOT_L0_083109', 19),
+				# ('CDOT_L1_083109', 290),
+				# ('CDOT_L1_082920', 290),
+				# ('CDOT_L0_090309', 19),
+				# ('CDOT_L1_090309', 290),
+				# ('CDOT_L1_090409', 290),
+				# ('CDOT_L1_090509', 290),
+				# ('CDOT_L1_090515', 290),
+				# ('CDOT_L1_090520', 290),
+				# ('CDOT_L1_090523', 290),
+				# ('CDOT_L1_090608', 290),
+				# ('CDOT_L1_090613', 290),
+				('CDOT_L0_090709', 19),
+			],
+			'AAAI':[ 
+				# ('CDOT2', 100),# ('CDOT3', 100),# ('CDOT8', 100),
+				# ('CDOT_L0', 19),# ('CDOT_L0_071923', 19),# ('CDOT_L0_ori', 19),
+				# ('CDOT_L0_072317', 19),# ('CDOT_L1_072416', 287),# ('CDOT_L2_072422', 1287),
+				# ('CDOT_L0_072518', 19),# ('CDOT_L1_072518', 287),# ('CDOT_L0_072522', 19),
+				# ('CDOT_L1_072522', 287),# ('CDOT_L0_072910', 19),# ('CDOT_L1_073110', 287),
+				# ('CDOT_L1_073112', 287),# ('CDOT_L1_073116', 287),# ('CDOT_L1_073120', 287),
+				# ('CDOT_L1_080101', 287),# ('CDOT_L0_080111', 19),# ('CDOT_L1_082618', 287),
+				('CDOT_L1_082620', 287),
+			],
+			'ACL':[ 
+				# ('CDOT_L0_072417', 19), # ACL
+				# ('CDOT_L1_072422', 278), # ACL
+				('CDOT_L0_072521', 19), # ACL
+				('CDOT_L1_072521', 278), # ACL
+			],
+			'SIGCOMM':[
+				# ('CDOT_L0_072418', 19), # SIGCOMM
+				# ('CDOT_L1_072422', 265), #SIGCOMM
+				# ('CDOT_L0_072518', 19), # SIGCOMM
+				# ('CDOT_L0_072521', 19), # SIGCOMM
+				# ('CDOT_L1_072518', 265), #SIGCOMM
+				# ('CDOT_L1_072522', 265), #SIGCOMM
+				('CDOT_L0_072816', 19), #SIGCOMM
+			]
+		},
+		'bigclam': {
+			'MIXED_200':[
+				# ('bigclam_L0_090309', 19),
+				# ('bigclam_L1_090309', 290),
+				# ('bigclam_L1_090409', 290),
+				# ('bigclam_L1_090509', 290),
+				# ('bigclam_L0_090709', 19),
+				# ('bigclam_L0_090809', 19),
+				# ('bigclam_L0_090815', 19),
+				# ('bigclam_L1_090815', 290),
+				# ('bigclam_L0_090816', 19),
+				# ('bigclam_L1_090816', 290),
+				('bigclam_L0_090817', 19),
+				# ('bigclam_L1_090817', 290),
+			],
+			'AAAI':[
+				# ('bigclam_100', 100),
+				# ('bigclam_L1_072416', 287),
+				# ('bigclam_L2_072414', 1287),
+				# ('bigclam_L0_072518', 19),
+				# ('bigclam_L1_072518', 287),
+			],
+			'ACL':[
+				# ('bigclam_L0_072416', 19), # ACL
+				# ('bigclam_L1_072416', 278), # ACL
+				# ('bigclam_L2_072500', 1204), # ACL
+				('bigclam_L0_072521', 19), # ACL
+				('bigclam_L1_072521', 278), # ACL
+			],
+			'SIGCOMM':[
+				# ('bigclam_L0_072417', 19), # SIGCOMM
+				# ('bigclam_L1_072417', 265), # SIGCOMM
+				# ('bigclam_L2_072500', 1060), # SIGCOMM
+				# ('bigclam_L0_072518', 19), # SIGCOMM
+				# ('bigclam_L0_072521', 19), # SIGCOMM
+				# ('bigclam_L1_072518', 265), # SIGCOMM
+			]
 
-        }
-    }
-    dataset_path = 'data'
-    expi = 'link_pred'
-    root = os.path.abspath(os.path.join('..', '..'))
-    result = pickle.load(open('result.pkl', 'rb')) if os.path.isfile('result.pkl') else []
-    data = {'model': [], 'cc': [], 'n': [], 'score': [], 'mode': [], 'conference': [], 'version':[]}
-    for model in models:
-        for mode in modes:
-            for conference in conferences:
-                if versions[model]:
-                    for version in versions[model][conference]:
-                        subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s} {5:d}'.format(dataset_path, model, mode, conference, version[0], version[1]), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
-                        result += pickle.load(open('result_batch.pkl', 'rb'))
-                else:
-                    subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s} {5:d}'.format(dataset_path, model, mode, conference, '', 100), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
-                    result += pickle.load(open('result_batch.pkl', 'rb'))
-                pickle.dump(result, open('result.pkl', 'wb'))   
-    for i in result:
-        for k in data.keys():
-            data[k].append(i[k])
-    df = pd.DataFrame(data=data)
-    df = df.ix[df.groupby(['model', 'mode', 'conference', 'version'])['score'].idxmax().values, :].reset_index(drop=True)
-    out_filename = os.path.join(root, 'measure', expi, 'link_pred_{date:s}.csv'.format(date=str(datetime.datetime.now()).replace(":", "-")))
-    if not os.path.exists(os.path.dirname(out_filename)):
-        os.makedirs(os.path.dirname(out_filename))
-    df.to_csv(out_filename, index=False)
-    os.remove('result_batch.pkl')
-    os.remove('result.pkl')
+		}
+	}
+	dataset_path = 'data'
+	expi = 'link_pred'
+	root = os.path.abspath(os.path.join('..', '..'))
+	result = pickle.load(open('result.pkl', 'rb')) if os.path.isfile('result.pkl') else []
+	data = {'model': [], 'cc': [], 'n': [], 'score': [], 'mode': [], 'conference': [], 'version':[]}
+	for model in models:
+		for mode in modes:
+			for conference in conferences:
+				if versions[model]:
+					for version in versions[model][conference]:
+						subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s} {5:d}'.format(dataset_path, model, mode, conference, version[0], version[1]), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+						result += pickle.load(open('result_batch.pkl', 'rb'))
+				else:
+					subprocess.run('python predict_batch.py {0:s} {1:s} {2:s} {3:s} {4:s} {5:d}'.format(dataset_path, model, mode, conference, '', 100), shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+					result += pickle.load(open('result_batch.pkl', 'rb'))
+				pickle.dump(result, open('result.pkl', 'wb'))   
+	for i in result:
+		for k in data.keys():
+			data[k].append(i[k])
+	df = pd.DataFrame(data=data)
+	df = df.ix[df.groupby(['model', 'mode', 'conference', 'version', 'n'])['score'].idxmax().values, :].reset_index(drop=True)
+	out_filename = os.path.join(root, 'measure', expi, 'link_pred_{date:s}.csv'.format(date=str(datetime.datetime.now()).replace(":", "-")))
+	if not os.path.exists(os.path.dirname(out_filename)):
+		os.makedirs(os.path.dirname(out_filename))
+	df.to_csv(out_filename, index=False)
+	os.remove('result_batch.pkl')
+	os.remove('result.pkl')
